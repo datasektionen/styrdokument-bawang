@@ -1,25 +1,46 @@
+const http = require("https");
 const template = require("./find-template");
+const config = require("./config");
 
 module.exports = function(app) {
-    app.get("/", function(req, res) {
-        res.send("Hello world");
-    });
-
     app.get("*", function(req, res) {
-        console.log("Recieved reqest for: " + req.path);
         templatePath = template.find(req);
-        console.log(templatePath);
         if (templatePath) {
-            // Hämta data från tiatan, har har vi lite dummydata för stunden.
-            taitanData = {
-                body: "<h1>Hello world!</h1><h1>Hello world!</h1><h1>Hello world!</h1>",
-                sidebar: "<h1>Sidebar world</h1>",
-                anchors: ["hej", "världen"]
-            }
-
-            res.render(templatePath, taitanData);
+            getTaitanData(req.path, function(taitanData) {
+                res.render(templatePath, taitanData);
+            })
         } else {
             res.send("404 not found.");
         }
     })
+}
+
+// does not handle subdomain differentiation.
+function getTaitanData(path, callback) {
+    var options = {
+        host: config.taitanHost,
+        path: path,
+        method: "GET"
+    }
+    var request = http.request(options, function(res) {
+        res.setEncoding("utf-8");
+        var collectedData = "";
+        res.on("data", function(data) {
+            collectedData += data;
+        });
+        res.on("end", function() {
+            if (collectedData) {
+                try {
+                    var responseObject = JSON.parse(collectedData);
+                    callback(responseObject);
+                } catch(e) {
+                    console.log("Taitn parsing error:", e);
+                }
+            }
+        });
+        res.on("error", function(err) {
+            console.log("Taitan error:", err);
+        });
+    });
+    request.end();
 }
