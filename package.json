@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/datasektionen/gloo/issues"
   },
-  "homepage": "https://github.com/datasektionen/gloo"
+  "homepage": "https://github.com/datasektionen/gloo",
+  "dependencies": {
+    "consolidate": "^0.14.0",
+    "express": "^4.13.4",
+    "handlebars": "^4.0.5",
+    "jade": "^1.11.0"
+  }
 }
