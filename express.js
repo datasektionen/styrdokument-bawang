@@ -1,13 +1,17 @@
-var express = require("express");
-var engines = require("consolidate");
+const express = require("express");
+const cons = require("consolidate");
+const config = require("./config");
+
 
 module.exports = function() {
-   var app = express();
+    var app = express();
 
-   app.engine("jade", engines.jade);
-   app.engine("handlebars", engines.handlebars);
+    for (var i in config.supportedEngines) {
+        var engineDesc = config.supportedEngines[i];
+        //console.log(engineDesc.extension, JSON.stringify(engineDesc.engine));
+        app.engine(engineDesc.extension, cons[engineDesc.engine]);
+    }
+    app.set("views", "./templates");
 
-
-
-   return app;
+    return app;
 }
