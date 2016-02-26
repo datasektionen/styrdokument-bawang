@@ -5,13 +5,13 @@ const config = require("./config");
 
 module.exports = function() {
     var app = express();
+    app.set("views", "./templates");
+    registerSupportedEngines(app);
+    return app;
+}
 
-    for (var i in config.supportedEngines) {
-        var engineDesc = config.supportedEngines[i];
-        //console.log(engineDesc.extension, JSON.stringify(engineDesc.engine));
+function registerSupportedEngines(app) {
+    for (var engineDesc of config.supportedEngines) {
         app.engine(engineDesc.extension, cons[engineDesc.engine]);
     }
-    app.set("views", "./templates");
-
-    return app;
 }

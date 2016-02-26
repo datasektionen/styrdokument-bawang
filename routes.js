@@ -6,7 +6,7 @@ module.exports = function(app) {
     //Sometime later we might want to do something with the favicon.ico.
     app.get("/favicon.ico", function(req, res) {
         res.status(404).send();
-    }); 
+    });
 
     app.get("*", function(req, res) {
         subdomain = getSubdomain(req);
@@ -25,13 +25,14 @@ module.exports = function(app) {
     });
 }
 
+// Concatenates the subdomains so we don't have to handle multiple ones.
 function getSubdomain(req) {
     if (req.subdomains && req.subdomains.length > 0) {
-        //We do not have subdomains.
-        //template should be located in 
+        // We do not have subdomains.
+        // Template should be located in
         return req.subdomains.join();
     } else {
-        return "www"; //default if there is no subdomain.
+        return "www"; // Default if there is no subdomain.
     }
 }
 
@@ -42,12 +43,15 @@ function getTaitanData(path, subdomain, callback) {
         path: path,
         method: "GET"
     }
+
     var request = http.request(options, function(res) {
-        res.setEncoding("utf-8");
         var collectedData = "";
+        res.setEncoding("utf-8");
+
         res.on("data", function(data) {
             collectedData += data;
         });
+
         res.on("end", function() {
             if (collectedData) {
                 try {
@@ -60,9 +64,11 @@ function getTaitanData(path, subdomain, callback) {
                 callback(undefined);
             }
         });
+
         res.on("error", function(err) {
-            console.log("Taitan error:", err);
+            console.log("Taitan connection error:", err);
         });
     });
+
     request.end();
 }

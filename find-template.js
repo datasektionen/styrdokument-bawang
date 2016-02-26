@@ -2,29 +2,37 @@ const path = require("path");
 const fs = require("fs");
 const config = require("./config");
 
+// Finds the template file that fits the request. We should at least always deliver the toplevel default file.
 exports.find = function(req, subdomain) {
-    // Concatenating the subdomains not to have to handle multiple ones.
-    const requestPath = req.path;
-    const topDir = path.resolve("./templates");
-    
-    var subPathToLookIn = "/templates/" + subdomain + requestPath;
-    var pathToLookIn = path.resolve("." + subPathToLookIn);
+    var requestPath = req.path;
+    var topDir = path.resolve("./templates");
+
+    var pathToLookIn = path.resolve("./templates/" + subdomain + requestPath);
+    var explicitTemplatePath = templatePath(pathToLookIn);
+    if (explicitTemplatePath) {
+        return explicitTemplatePath;
+    } else {
+        return defualtTemplateOf(pathToLookIn);
+    }
+}
+
+function defualtTemplateOf(pathToLookIn) {
+    pathToLookIn = path.dirname(pathToLookIn);
+    pathToLookIn = path.resolve(pathToLookIn, config.defaultTemplate);
     var pathFound;
-    if (!(pathFound = fileExistsPath(pathToLookIn))) {
-        pathToLookIn = path.dirname(pathToLookIn);
-        pathToLookIn = path.resolve(pathToLookIn, config.defaultTemplate);
-        while (!(pathFound = fileExistsPath(pathToLookIn))) {
-            var directory = path.dirname(pathToLookIn);
-            if (directory == topDir) {
-                return undefined;
-            }
-            pathToLookIn = path.resolve(directory, "../" + config.defaultTemplate);
+    while (!(pathFound = templatePath(pathToLookIn))) {
+        var directory = path.dirname(pathToLookIn);
+        if (directory == topDir) {
+            return undefined;
         }
+        pathToLookIn = path.resolve(directory, "../" + config.defaultTemplate);
     }
     return pathFound;
 }
 
-function fileExistsPath(fullPath) {
+// Takes a full path to a file too look for, without the extension.
+// Returns undefined if not found with any supported extension.
+function templatePath(fullPath) {
     for (var i in config.supportedEngines) {
         var engineDesc = config.supportedEngines[i];
         try {
@@ -33,7 +41,7 @@ function fileExistsPath(fullPath) {
             fs.accessSync(fullPathWithExt);
             console.log("Found it!", fullPathWithExt);
             return fullPathWithExt;
-        } catch (e) { 
+        } catch (e) {
             //console.log("did not find it!", fullPathWithExt);
         }
     }
