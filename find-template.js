@@ -2,21 +2,12 @@ const path = require("path");
 const fs = require("fs");
 const config = require("./config");
 
-exports.find = function(req) {
+exports.find = function(req, subdomain) {
     // Concatenating the subdomains not to have to handle multiple ones.
-    var subdomain;
     const requestPath = req.path;
-
-    if (!req.subdomains) {
-        //We do not have subdomains.
-        //template should be located in 
-        subdomain = req.subdomains.join();
-    } else {
-        subdomain = "www"; //default if there is no subdomain.
-    }
-
     const topDir = path.resolve("./templates");
-    const subPathToLookIn = "/templates/" + subdomain + requestPath;
+    
+    var subPathToLookIn = "/templates/" + subdomain + requestPath;
     var pathToLookIn = path.resolve("." + subPathToLookIn);
     var pathFound;
     if (!(pathFound = fileExistsPath(pathToLookIn))) {
@@ -38,12 +29,14 @@ function fileExistsPath(fullPath) {
         var engineDesc = config.supportedEngines[i];
         try {
             var fullPathWithExt = fullPath + "." + engineDesc.extension;
-            console.log("Looking for " + fullPathWithExt);
+            //console.log("Looking for " + fullPathWithExt);
             fs.accessSync(fullPathWithExt);
-            console.log("Found it!");
+            console.log("Found it!", fullPathWithExt);
             return fullPathWithExt;
-        } catch (e) { }
+        } catch (e) { 
+            //console.log("did not find it!", fullPathWithExt);
+        }
     }
-    console.log("Does not exist :(");
+    //console.log("Does not exist :(");
     return undefined;
 }

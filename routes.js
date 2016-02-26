@@ -3,17 +3,16 @@ const template = require("./find-template");
 const config = require("./config");
 
 module.exports = function(app) {
+    //Sometime later we might want to do something with the favicon.ico.
+    app.get("/favicon.ico", function(req, res) {
+        res.status(404).send();
+    }); 
+
     app.get("*", function(req, res) {
-        var templatePath;
-        //TODO handle this better.
-        if (req.path != "/") {
-            templatePath = template.find(req);
-        } else {
-            templatePath = "_default.handlebars";
-        }
-        templatePath = template.find(req);
+        subdomain = getSubdomain(req);
+        var templatePath = template.find(req, subdomain);
         if (templatePath) {
-            getTaitanData(req.path, function(taitanData) {
+            getTaitanData(req.path, subdomain, function(taitanData) {
                 if (taitanData) {
                     res.render(templatePath, taitanData);
                 } else {
@@ -23,13 +22,23 @@ module.exports = function(app) {
         } else {
             res.send("404 not found.");
         }
-    })
+    });
+}
+
+function getSubdomain(req) {
+    if (req.subdomains && req.subdomains.length > 0) {
+        //We do not have subdomains.
+        //template should be located in 
+        return req.subdomains.join();
+    } else {
+        return "www"; //default if there is no subdomain.
+    }
 }
 
 // does not handle subdomain differentiation.
-function getTaitanData(path, callback) {
+function getTaitanData(path, subdomain, callback) {
     var options = {
-        host: config.taitanHost,
+        host: config.subdomainToHost[subdomain],
         path: path,
         method: "GET"
     }
@@ -45,7 +54,7 @@ function getTaitanData(path, callback) {
                     var responseObject = JSON.parse(collectedData);
                     callback(responseObject);
                 } catch(e) {
-                    console.log("Taitn parsing error:", e);
+                    console.log("Taitan parsing error:", e);
                 }
             } else {
                 callback(undefined);
