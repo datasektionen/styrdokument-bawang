@@ -1,22 +1,22 @@
 # gloo
 "View over the wire"
 
-En app för att ta data från Taitan och rendrera in det med tmplates från Bawang, för att sedan ge tillbaks det till användaren.
+An app for taking data from Taitan (or similar) and rendering it according to templates, returns html to the user.
 
 ## Procedur:
-
-
-
- 1. Vi lyssnar efter ex: `get gloo.datasektionen.se/stuff/abc`
- 2. `Get taitan.datasektionen.se/stuff/abc`, detta är datan för sidan som ska rendreras
- 3. Avgör vilken template vi ska ha: Kollar först efter `/templates/gloo/stuff/abc.*`, detta bör vara en template eller en referens till en template.
-   1. Om det är det, använd den och fortsätt
-   2. Om inte, försök `/templates/gloo/stuff/_default.*`. (Ja, vi antar att ingen riktig sida kommer heta det, så det är "defaulten" för alla sidor i mappen.
-   3. Om den inte finns, prova `/templates/gloo/_default.*` och så vidare, klättra så högt du kan.
-   4. *Två specialfall:* Toppdomänen, den kommer sökas som `/templates/gloo.*`. (Och om filen inte finns skulle alltså `/templates/gloo/_default.*` användas.
-   5. Och om subdomänen inte specifieras antas `www` som subdomän.
- 4. Rendera datan med givet template
- 5. Skicka tillbaks till användaren
+ 1. We listen after for example `GET gloo.datasektionen.se/stuff/abc`
+ 2. `GET taitan.datasektionen.se/stuff/abc`, this is the data that will be rendered.
+ 3. Determine which template we should use. First look after `/templates/gloo/stuff/abc.*`
+   1. If it is a template, used it and continue.
+   2. Else, try `/templates/gloo/stuff/_default.*`.
+   3. Else, try `/templates/gloo/_default.*` and so on, climbing until you reach the top of the templates folder.
+   4. If the subdomain is not specified it is presumed to be `www`.
+ 4. Render the data with the given template.
+ 5. Send back the rendered html to the user.
  
-
-
+## Lägg till template engine
+ 1. Go to [consolidatejs](https://www.npmjs.com/package/consolidate) and check if the engine is supported.
+ 2. Add the engine to `package.json`
+ 3. Add the engine and extension to `config.js`
+ 4. Do `npm install` to install the new engine. 
+ 5. Done.
