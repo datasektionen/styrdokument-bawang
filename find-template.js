@@ -4,8 +4,16 @@ const config = require("./config");
 
 exports.find = function(req) {
     // Concatenating the subdomains not to have to handle multiple ones.
-    const subdomain = req.subdomains.join();
+    var subdomain;
     const requestPath = req.path;
+
+    if (!req.subdomains) {
+        //We do not have subdomains.
+        //template should be located in 
+        subdomain = req.subdomains.join();
+    } else {
+        subdomain = "www"; //default if there is no subdomain.
+    }
 
     const topDir = path.resolve("./templates");
     const subPathToLookIn = "/templates/" + subdomain + requestPath;
@@ -15,11 +23,11 @@ exports.find = function(req) {
         pathToLookIn = path.dirname(pathToLookIn);
         pathToLookIn = path.resolve(pathToLookIn, config.defaultTemplate);
         while (!(pathFound = fileExistsPath(pathToLookIn))) {
-            const directory = path.dirname(pathToLookIn);
+            var directory = path.dirname(pathToLookIn);
             if (directory == topDir) {
                 return undefined;
             }
-            pathToLookIn = path.resolve(pathToLookIn, "../" + config.defaultTemplate);
+            pathToLookIn = path.resolve(directory, "../" + config.defaultTemplate);
         }
     }
     return pathFound;

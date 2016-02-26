@@ -4,11 +4,22 @@ const config = require("./config");
 
 module.exports = function(app) {
     app.get("*", function(req, res) {
+        var templatePath;
+        //TODO handle this better.
+        if (req.path != "/") {
+            templatePath = template.find(req);
+        } else {
+            templatePath = "_default.handlebars";
+        }
         templatePath = template.find(req);
         if (templatePath) {
             getTaitanData(req.path, function(taitanData) {
-                res.render(templatePath, taitanData);
-            })
+                if (taitanData) {
+                    res.render(templatePath, taitanData);
+                } else {
+                    res.send("404 not found");
+                }
+            });
         } else {
             res.send("404 not found.");
         }
@@ -36,6 +47,8 @@ function getTaitanData(path, callback) {
                 } catch(e) {
                     console.log("Taitn parsing error:", e);
                 }
+            } else {
+                callback(undefined);
             }
         });
         res.on("error", function(err) {
