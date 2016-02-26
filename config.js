@@ -1,7 +1,7 @@
 // Configurations, for example ports for the templates
 
 module.exports = {
-    port: 3000,
+    port: 5000,
     defaultTemplate: "_default",
     subdomainToHost: {
     	www: "taitan.datasektionen.se", 
