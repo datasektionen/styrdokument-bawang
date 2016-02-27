@@ -3,8 +3,9 @@
 module.exports = {
     port: 5000,
     defaultTemplate: "_default",
+    topTemplateDir: "templates",
     subdomainToHost: {
-    	www: "taitan.datasektionen.se", 
+    	www: "taitan.datasektionen.se",
     	gloo: "taitan.datasektionen.se" //if we deploy it to dokku it will get this subdomain, so for easy of use talk to taitan for this aswell.
     },
     supportedEngines: [

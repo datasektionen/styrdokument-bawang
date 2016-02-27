@@ -1,6 +1,6 @@
 {
   "name": "gloo",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "view over the wire",
   "main": "index.js",
   "scripts": {

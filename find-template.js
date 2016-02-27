@@ -5,7 +5,6 @@ const config = require("./config");
 // Finds the template file that fits the request. We should at least always deliver the toplevel default file.
 exports.find = function(req, subdomain) {
     var requestPath = req.path;
-    var topDir = path.resolve("./templates");
 
     var pathToLookIn = path.resolve("./templates/" + subdomain + requestPath);
     var explicitTemplatePath = templatePath(pathToLookIn);
@@ -16,13 +15,22 @@ exports.find = function(req, subdomain) {
     }
 }
 
+// First looks for a default file (name specified in config.defualtTemplate) in
+// the same directory as given file, then in the directory above, then above
+// that, etc.
+// The last one it will check is ./config.topTemplateDirectory/config.defaultFile.
+// That one should always exist, and if some idiot deletes it, bad things might
+// happen.
 function defualtTemplateOf(pathToLookIn) {
     pathToLookIn = path.dirname(pathToLookIn);
     pathToLookIn = path.resolve(pathToLookIn, config.defaultTemplate);
+    var topDir = path.resolve("./" + config.topTemplateDir + "/");
     var pathFound;
     while (!(pathFound = templatePath(pathToLookIn))) {
         var directory = path.dirname(pathToLookIn);
         if (directory == topDir) {
+            console.log("Toplevel default template", pathToLookIn, "not found.",
+                "This should never happen. Who deleted it?");
             return undefined;
         }
         pathToLookIn = path.resolve(directory, "../" + config.defaultTemplate);
@@ -37,14 +45,10 @@ function templatePath(fullPath) {
         var engineDesc = config.supportedEngines[i];
         try {
             var fullPathWithExt = fullPath + "." + engineDesc.extension;
-            //console.log("Looking for " + fullPathWithExt);
             fs.accessSync(fullPathWithExt);
-            console.log("Found it!", fullPathWithExt);
+            //console.log("Found it!", fullPathWithExt);
             return fullPathWithExt;
-        } catch (e) {
-            //console.log("did not find it!", fullPathWithExt);
-        }
+        } catch (e) { }
     }
-    //console.log("Does not exist :(");
     return undefined;
 }
