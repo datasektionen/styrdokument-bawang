@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs");
+const debug = require("debug")("gloo:find-template");
 const config = require("./config");
 
 // Finds the template file that fits the request. We should at least always deliver the toplevel default file.
@@ -29,7 +30,7 @@ function defualtTemplateOf(pathToLookIn) {
     while (!(pathFound = templatePath(pathToLookIn))) {
         var directory = path.dirname(pathToLookIn);
         if (directory == topDir) {
-            console.log("Toplevel default template", pathToLookIn, "not found.",
+            debug("BAD!", "Toplevel default template", pathToLookIn, "not found.",
                 "This should never happen. Who deleted it?");
             return undefined;
         }
@@ -46,7 +47,7 @@ function templatePath(fullPath) {
         try {
             var fullPathWithExt = fullPath + "." + engineDesc.extension;
             fs.accessSync(fullPathWithExt);
-            //console.log("Found it!", fullPathWithExt);
+            debug("Found template file " + fullPathWithExt);
             return fullPathWithExt;
         } catch (e) { }
     }

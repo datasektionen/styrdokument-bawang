@@ -1,4 +1,5 @@
 const http = require("https");
+const debug = require("debug")("gloo:routes");
 const template = require("./find-template");
 const config = require("./config");
 
@@ -58,7 +59,7 @@ function getTaitanData(path, subdomain, callback) {
                     var responseObject = JSON.parse(collectedData);
                     callback(responseObject);
                 } catch(e) {
-                    console.log("Taitan parsing error:", e);
+                    debug("Taitan parsing error: " + e);
                 }
             } else {
                 callback(undefined);
@@ -66,7 +67,7 @@ function getTaitanData(path, subdomain, callback) {
         });
 
         res.on("error", function(err) {
-            console.log("Taitan connection error:", err);
+            debug("Taitan connection error: " + err);
         });
     });
 

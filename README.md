@@ -20,3 +20,8 @@ An app for taking data from Taitan (or similar) and rendering it according to te
  3. Add the engine name in consolidate and extension to `config.js`
  4. Do `npm install` to install the new engine.
  5. Done.
+
+## Debugging
+To see debug messages, run with "DEBUG=gloo:*".
+On windows, it's an environment variable, so run "set DEGUB=gloo:*" before starting the app instead.
+When writing debug messages, see find-template.js for reference instead of using console.log().
