@@ -22,6 +22,6 @@ An app for taking data from Taitan (or similar) and rendering it according to te
  5. Done.
 
 ## Debugging
-To see debug messages, run with "DEBUG=gloo:*".
-On windows, it's an environment variable, so run "set DEGUB=gloo:*" before starting the app instead.
+To see debug messages, run with "DEBUG=gloo:\*".
+On windows, it's an environment variable, so run "set DEGUB=gloo:\*" before starting the app instead.
 When writing debug messages, see find-template.js for reference instead of using console.log().
