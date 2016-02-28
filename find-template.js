@@ -23,9 +23,13 @@ exports.find = function(req, subdomain) {
 // That one should always exist, and if some idiot deletes it, bad things might
 // happen.
 function defualtTemplateOf(pathToLookIn) {
+    const topDir = path.resolve("./" + config.topTemplateDirectory + "/");
+    // We shall only look in templateDir, else we'll go into a loop.
+    if (!isPathInsideDir(pathToLookIn, topDir)) {
+        return undefined;
+    }
     pathToLookIn = path.dirname(pathToLookIn);
     pathToLookIn = path.resolve(pathToLookIn, config.defaultTemplate);
-    var topDir = path.resolve("./" + config.topTemplateDir + "/");
     var pathFound;
     while (!(pathFound = templatePath(pathToLookIn))) {
         var directory = path.dirname(pathToLookIn);
@@ -34,7 +38,7 @@ function defualtTemplateOf(pathToLookIn) {
                 "This should never happen. Who deleted it?");
             return undefined;
         }
-        pathToLookIn = path.resolve(directory, "../" + config.defaultTemplate);
+        pathToLookIn = path.resolve(directory, "../" + config.defautTemplate);
     }
     return pathFound;
 }
@@ -52,4 +56,23 @@ function templatePath(fullPath) {
         } catch (e) { }
     }
     return undefined;
+}
+
+function isPathInsideDir(fullPath, containingDir) {
+    const relPath = path.relative(containingDir, fullPath)
+    // If we have to go up from containingDir, fullPath is not in containingDir.
+    if (relPath.substr(0,2) == "..") {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+// Unit tests
+
+exports.test = function(assert) {
+    assert(templatePath(path.resolve("./" + config.topTemplateDir + "/", config.defaultTemplate)),
+        "There must be a toplevel default template file.");
+    assert(!(defualtTemplateOf(path.resolve("/"))),
+        "Nothing should be returned if we're not in template dir.");
 }

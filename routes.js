@@ -45,7 +45,7 @@ function getTaitanData(path, subdomain, callback) {
         method: "GET"
     }
 
-    var request = http.request(options, function(res) {
+    var requestCallback = function(res) {
         var collectedData = "";
         res.setEncoding("utf-8");
 
@@ -69,7 +69,8 @@ function getTaitanData(path, subdomain, callback) {
         res.on("error", function(err) {
             debug("Taitan connection error: " + err);
         });
-    });
+    };
 
+    var request = http.request(options, requestCallback);
     request.end();
 }
