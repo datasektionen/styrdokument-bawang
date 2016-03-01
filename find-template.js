@@ -8,12 +8,16 @@ exports.find = function(req, subdomain) {
     var requestPath = req.path;
 
     var pathToLookIn = path.resolve("./templates/" + subdomain + requestPath);
-    var explicitTemplatePath = templatePath(pathToLookIn);
+    var site = subdomain + requestPath;
+    var result;
+    var explicitTemplatePath = templatePath(pathToLookIn, site);
     if (explicitTemplatePath) {
-        return explicitTemplatePath;
+        result = explicitTemplatePath;
     } else {
-        return defualtTemplateOf(pathToLookIn);
+        result = defaultTemplateOf(pathToLookIn, site);
     }
+    debug("Found template file: " + result);
+    return result;
 }
 
 // First looks for a default file (name specified in config.defualtTemplate) in
@@ -22,7 +26,7 @@ exports.find = function(req, subdomain) {
 // The last one it will check is ./config.topTemplateDirectory/config.defaultFile.
 // That one should always exist, and if some idiot deletes it, bad things might
 // happen.
-function defualtTemplateOf(pathToLookIn) {
+function defaultTemplateOf(pathToLookIn, site) {
     const topDir = path.resolve("./" + config.topTemplateDirectory + "/");
     // We shall only look in templateDir, else we'll go into a loop.
     if (!isPathInsideDir(pathToLookIn, topDir)) {
@@ -31,7 +35,7 @@ function defualtTemplateOf(pathToLookIn) {
     pathToLookIn = path.dirname(pathToLookIn);
     pathToLookIn = path.resolve(pathToLookIn, config.defaultTemplate);
     var pathFound;
-    while (!(pathFound = templatePath(pathToLookIn))) {
+    while (!(pathFound = templatePath(pathToLookIn, site))) {
         var directory = path.dirname(pathToLookIn);
         if (directory == topDir) {
             debug("BAD!", "Toplevel default template", pathToLookIn, "not found.",
@@ -45,15 +49,35 @@ function defualtTemplateOf(pathToLookIn) {
 
 // Takes a full path to a file too look for, without the extension.
 // Returns undefined if not found with any supported extension.
-function templatePath(fullPath) {
+function templatePath(fullPath, site) {
+    var templatePathKnownExt = templatePathGuessExt(fullPath, site);
+    if (templatePathKnownExt) {
+        return templatePathKnownExt;
+    } else {
+        return templatePathTryAll(fullPath);
+    }
+}
+
+function templatePathGuessExt(fullPath, site) {
+    var guessExt = config.knownExtensions[site];
+    var filePath = fullPath + "." + guessExt;
+    if (fileExists(filePath)) {
+        return filePath;
+    } else {
+        return undefined;
+    }
+}
+
+function templatePathTryAll(fullPath) {
     for (var i in config.supportedEngines) {
         var engineDesc = config.supportedEngines[i];
         try {
             var fullPathWithExt = fullPath + "." + engineDesc.extension;
             fs.accessSync(fullPathWithExt);
-            debug("Found template file " + fullPathWithExt);
             return fullPathWithExt;
-        } catch (e) { }
+        } catch (e) {
+            continue;
+        }
     }
     return undefined;
 }
@@ -68,11 +92,21 @@ function isPathInsideDir(fullPath, containingDir) {
     }
 }
 
+//Here, we actually mean a full path, extension and all.
+function fileExists(fullPath) {
+    try {
+        fs.accessSync(fullPath);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
 // Unit tests
 
 exports.test = function(assert) {
     assert(templatePath(path.resolve("./" + config.topTemplateDir + "/", config.defaultTemplate)),
         "There must be a toplevel default template file.");
-    assert(!(defualtTemplateOf(path.resolve("/"))),
+    assert(!(defaultTemplateOf(path.resolve("/"))),
         "Nothing should be returned if we're not in template dir.");
 }
