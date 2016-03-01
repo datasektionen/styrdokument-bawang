@@ -3,19 +3,21 @@ const fs = require("fs");
 const debug = require("debug")("gloo:find-template");
 const config = require("./config");
 
-// Finds the template file that fits the request. We should at least always deliver the toplevel default file.
+// Finds the template file that fits the request.
+//We should at least always deliver the toplevel default file.
 exports.find = function(req, subdomain) {
     var requestPath = req.path;
-
-    var pathToLookIn = path.resolve("./templates/" + subdomain + requestPath);
     var site = subdomain + requestPath;
-    var result;
+    var pathToLookIn = path.resolve("./templates/" + site);
     var explicitTemplatePath = templatePath(pathToLookIn, site);
+    var result;
+
     if (explicitTemplatePath) {
         result = explicitTemplatePath;
     } else {
         result = defaultTemplateOf(pathToLookIn, site);
     }
+
     debug("Found template file: " + result);
     return result;
 }
@@ -29,22 +31,22 @@ exports.find = function(req, subdomain) {
 function defaultTemplateOf(pathToLookIn, site) {
     const topDir = path.resolve("./" + config.topTemplateDirectory + "/");
     // We shall only look in templateDir, else we'll go into a loop.
-    if (!isPathInsideDir(pathToLookIn, topDir)) {
+    if (isPathInsideDir(pathToLookIn, topDir)) {
+        pathToLookIn = path.resolve(path.dirname(pathToLookIn), config.defaultTemplate);
+        var pathFound;
+        while (!(pathFound = templatePath(pathToLookIn, site))) {
+            var directory = path.dirname(pathToLookIn);
+            if (directory == topDir) {
+                debug("BAD!", "Toplevel default template", pathToLookIn, "not found.",
+                    "This should never happen. Who deleted it?");
+                return undefined;
+            }
+            pathToLookIn = path.resolve(directory, "../" + config.defautTemplate);
+        }
+        return pathFound;
+    } else {
         return undefined;
     }
-    pathToLookIn = path.dirname(pathToLookIn);
-    pathToLookIn = path.resolve(pathToLookIn, config.defaultTemplate);
-    var pathFound;
-    while (!(pathFound = templatePath(pathToLookIn, site))) {
-        var directory = path.dirname(pathToLookIn);
-        if (directory == topDir) {
-            debug("BAD!", "Toplevel default template", pathToLookIn, "not found.",
-                "This should never happen. Who deleted it?");
-            return undefined;
-        }
-        pathToLookIn = path.resolve(directory, "../" + config.defautTemplate);
-    }
-    return pathFound;
 }
 
 // Takes a full path to a file too look for, without the extension.
@@ -62,6 +64,7 @@ function templatePathGuessExt(fullPath, site) {
     var guessExt = config.knownExtensions[site];
     var filePath = fullPath + "." + guessExt;
     if (fileExists(filePath)) {
+        debug("Guessed extension right");
         return filePath;
     } else {
         return undefined;
@@ -74,6 +77,7 @@ function templatePathTryAll(fullPath) {
         try {
             var fullPathWithExt = fullPath + "." + engineDesc.extension;
             fs.accessSync(fullPathWithExt);
+            debug("Tried all");
             return fullPathWithExt;
         } catch (e) {
             continue;
