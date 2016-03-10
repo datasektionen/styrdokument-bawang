@@ -12,7 +12,8 @@ module.exports = function() {
 }
 
 function registerSupportedEngines(app) {
-    for (var engineDesc of config.supportedEngines) {
+    for (var engineName in config.supportedEngines) {
+        var engineDesc = config.supportedEngines[engineName];
         app.engine(engineDesc.extension, cons[engineDesc.engine]);
         debug("registered view engine: " + engineDesc.extension);
     }

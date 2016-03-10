@@ -72,17 +72,18 @@ function templatePathGuessExt(fullPath, site) {
 }
 
 function templatePathTryAll(fullPath) {
-    for (var i in config.supportedEngines) {
-        var engineDesc = config.supportedEngines[i];
+    for (var engineName in config.supportedEngines) {
+        var engineDesc = config.supportedEngines[engineName];
         try {
             var fullPathWithExt = fullPath + "." + engineDesc.extension;
+            debug("trying" + fullPathWithExt + engineDesc)
             fs.accessSync(fullPathWithExt);
-            debug("Tried all");
             return fullPathWithExt;
         } catch (e) {
             continue;
         }
     }
+    debug("Could not find file" + fullPath);
     return undefined;
 }
 
@@ -106,7 +107,7 @@ function fileExists(fullPath) {
     }
 }
 
-// Unit tests
+///////////////////////////////////// Unit tests
 
 exports.test = function(assert) {
     assert(templatePath(path.resolve("./" + config.topTemplateDir + "/", config.defaultTemplate)),

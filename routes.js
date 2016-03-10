@@ -40,7 +40,7 @@ function getSubdomain(req) {
 // does not handle subdomain differentiation.
 function getTaitanData(path, subdomain, callback) {
     var options = {
-        host: config.subdomainToHost[subdomain],
+        host: config.subdomainData[subdomain].taitanHost,
         path: path,
         method: "GET"
     }
