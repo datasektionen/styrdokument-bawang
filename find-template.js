@@ -29,7 +29,7 @@ exports.find = function(req, subdomain) {
 // That one should always exist, and if some idiot deletes it, bad things might
 // happen.
 function defaultTemplateOf(pathToLookIn, site) {
-    const topDir = path.resolve("./" + config.topTemplateDirectory + "/");
+    const topDir = path.resolve("./" + config.topTemplateDir + "/");
     // We shall only look in templateDir, else we'll go into a loop.
     if (isPathInsideDir(pathToLookIn, topDir)) {
         pathToLookIn = path.resolve(path.dirname(pathToLookIn), config.defaultTemplate);
@@ -41,7 +41,7 @@ function defaultTemplateOf(pathToLookIn, site) {
                     "This should never happen. Who deleted it?");
                 return undefined;
             }
-            pathToLookIn = path.resolve(directory, "../" + config.defautTemplate);
+            pathToLookIn = path.resolve(directory, "../" + config.defaultTemplate);
         }
         return pathFound;
     } else {
