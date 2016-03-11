@@ -1,0 +1,11 @@
+doctype html
+html
+  head
+    title my jade template
+  body
+    h1 Default template in test subdomain
+      !{body}
+      !{sidebar}
+    ul
+        for option in anchors
+            li= option

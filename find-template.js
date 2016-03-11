@@ -20,11 +20,17 @@ exports.find = function(req, subdomain) {
     if (explicitTemplatePath) {
         result = explicitTemplatePath;
     } else {
+        debug("No explicit template found, looking for a default.");
         result = defaultTemplateOf(pathToLookIn, subdomain);
     }
 
-    debug("Found template file: " + result);
-    return result;
+    if (result) {
+        debug("Found template file: " + result);
+        return result;
+    } else {
+        debug("Could not even find a defualt template file. This is a bug and should never happen. Report pls.")
+        return undefined;
+    }
 }
 
 // First looks for a default file (name specified in config.defualtTemplate) in
@@ -33,7 +39,7 @@ exports.find = function(req, subdomain) {
 // The last one it will check is ./config.topTemplateDirectory/config.defaultFile.
 // That one should always exist, and if some idiot deletes it, bad things might
 // happen.
-function defaultTemplateOf(pathToLookIn, site, subdomain) {
+function defaultTemplateOf(pathToLookIn, subdomain) {
     const topDir = path.resolve("./" + config.topTemplateDir + "/" + subdomain + "/");
     // We shall only look in templateDir, else we'll go into a loop.
     if (isPathInsideDir(pathToLookIn, topDir)) {
@@ -117,4 +123,21 @@ function fileExists(fullPath) {
 exports.test = function(assert) {
     assert(!(defaultTemplateOf(path.resolve("/"))),
         "Nothing should be returned if we're not in template dir.");
+    assert(exports.find({path: "/namnder"}, "www"),
+        "This nonexistent template should fallback to default template");
+    assert.equals(path.resolve(config.topTemplateDir, "test", config.defaultTemplate + ".jade"), exports.find({path: "/"}, "test"),
+        "Should use default template in subdomain when asked for topdir");
+    assert.equals(path.resolve(config.topTemplateDir, "test/foo", config.defaultTemplate + ".jade"), exports.find({path: "/foo/"}, "test"),
+        "Should use default template in foo folder.");
+    assert.equals(path.resolve(config.topTemplateDir, "test", config.defaultTemplate + ".jade"), exports.find({path: "/bar"}, "test"),
+        "No default in that folder, so it should use toplevel default template");
+    assert.equals(path.resolve(config.topTemplateDir, "test/foo", config.defaultTemplate + ".jade"), exports.find({path: "/foo/baz"}, "test"),
+        "No default in that folder, so it should climb up a level");
+    assert.equals(path.resolve(config.topTemplateDir, "test/foo", config.defaultTemplate + ".jade"), exports.find({path: "/foo/baz/bad/bac/baf/burbur"}, "test"),
+        "Should climb up many levels");
+    assert.equals(path.resolve(config.topTemplateDir, "test/custom.jade"), exports.find({path: "/custom"}, "test"),
+        "Should use custom template since it exists");
+    assert.equals(path.resolve(config.topTemplateDir, "test/", config.defaultTemplate + ".jade"), exports.find({path: "/custom/"}, "test"),
+        "Should not confuse directory custom with file custom.");
+
 }
