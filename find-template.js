@@ -6,16 +6,21 @@ const config = require("./config");
 // Finds the template file that fits the request.
 //We should at least always deliver the toplevel default file.
 exports.find = function(req, subdomain) {
-    var requestPath = req.path;
-    var site = subdomain + requestPath;
-    var pathToLookIn = path.resolve("./templates/" + site);
-    var explicitTemplatePath = templatePath(pathToLookIn, site);
+    var site = subdomain + req.path;
+    var pathToLookIn = path.resolve("./templates/" + site)
+    if (site.substr(site.length-1) == "/") {
+        pathToLookIn += path.sep + config.defaultTemplate;
+    }
+    debug("PATHL: " + pathToLookIn);
+    debug("SITE: " + site);
+
     var result;
 
+    var explicitTemplatePath = templatePath(pathToLookIn, subdomain);
     if (explicitTemplatePath) {
         result = explicitTemplatePath;
     } else {
-        result = defaultTemplateOf(pathToLookIn, site);
+        result = defaultTemplateOf(pathToLookIn, subdomain);
     }
 
     debug("Found template file: " + result);
@@ -28,13 +33,13 @@ exports.find = function(req, subdomain) {
 // The last one it will check is ./config.topTemplateDirectory/config.defaultFile.
 // That one should always exist, and if some idiot deletes it, bad things might
 // happen.
-function defaultTemplateOf(pathToLookIn, site) {
-    const topDir = path.resolve("./" + config.topTemplateDir + "/");
+function defaultTemplateOf(pathToLookIn, site, subdomain) {
+    const topDir = path.resolve("./" + config.topTemplateDir + "/" + subdomain + "/");
     // We shall only look in templateDir, else we'll go into a loop.
     if (isPathInsideDir(pathToLookIn, topDir)) {
         pathToLookIn = path.resolve(path.dirname(pathToLookIn), config.defaultTemplate);
         var pathFound;
-        while (!(pathFound = templatePath(pathToLookIn, site))) {
+        while (!(pathFound = templatePath(pathToLookIn, subdomain))) {
             var directory = path.dirname(pathToLookIn);
             if (directory == topDir) {
                 debug("BAD!", "Toplevel default template", pathToLookIn, "not found.",
@@ -51,8 +56,8 @@ function defaultTemplateOf(pathToLookIn, site) {
 
 // Takes a full path to a file too look for, without the extension.
 // Returns undefined if not found with any supported extension.
-function templatePath(fullPath, site) {
-    var templatePathKnownExt = templatePathGuessExt(fullPath, site);
+function templatePath(fullPath, subdomain) {
+    var templatePathKnownExt = templatePathGuessExt(fullPath, subdomain);
     if (templatePathKnownExt) {
         return templatePathKnownExt;
     } else {
@@ -60,8 +65,8 @@ function templatePath(fullPath, site) {
     }
 }
 
-function templatePathGuessExt(fullPath, site) {
-    var guessExt = config.knownExtensions[site];
+function templatePathGuessExt(fullPath, subdomain) {
+    var guessExt = config.knownExtensions[subdomain];
     var filePath = fullPath + "." + guessExt;
     if (fileExists(filePath)) {
         debug("Guessed extension right");
@@ -110,8 +115,6 @@ function fileExists(fullPath) {
 ///////////////////////////////////// Unit tests
 
 exports.test = function(assert) {
-    assert(templatePath(path.resolve("./" + config.topTemplateDir + "/", config.defaultTemplate)),
-        "There must be a toplevel default template file.");
     assert(!(defaultTemplateOf(path.resolve("/"))),
         "Nothing should be returned if we're not in template dir.");
 }

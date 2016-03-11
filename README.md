@@ -21,6 +21,10 @@ An app for taking data from Taitan (or similar) and rendering it according to te
  4. Do `npm install` to install the new engine.
  5. Done.
 
+## Writing templates
+The variables passed to the template engine are the same ones that Taitan sends, with no processing applied.
+So look there for documentation.
+
 ## Debugging
 To see debug messages, run with "DEBUG=gloo:\*".
 On windows, it's an environment variable, so run "set DEGUB=gloo:\*" before starting the app instead.
