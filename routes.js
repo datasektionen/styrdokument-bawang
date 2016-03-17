@@ -1,4 +1,5 @@
-const http = require("https");
+const https = require("https");
+const http = require("http");
 const debug = require("debug")("gloo:routes");
 const template = require("./find-template");
 const config = require("./config");
@@ -70,7 +71,11 @@ function getTaitanData(path, subdomain, callback) {
             debug("Taitan connection error: " + err);
         });
     };
-
-    var request = http.request(options, requestCallback);
+    var request;
+    if(config.subdomainData[subdomain].https) {
+        request = https.request(options, requestCallback);
+    } else {
+        request = http.request(options, requestCallback);
+    }
     request.end();
 }

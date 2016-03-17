@@ -6,11 +6,13 @@ module.exports = {
     topTemplateDir: "templates",
     subdomainData: {
         www: {
-            taitanHost: "taitan.datasektionen.se",
+            https: false,
+            taitanHost: "docs-taitan.datasektionen.se",
             // Engine is what it's called by consolidate.js. Might not always be the same as extension.
             engine: "jade",
         },
         gloo: {
+            https: true,
             taitanHost: "taitan.datasektionen.se",
             engine: "handlebars"
         }
