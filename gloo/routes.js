@@ -2,7 +2,7 @@ const https = require("https");
 const http = require("http");
 const debug = require("debug")("gloo:routes");
 const template = require("./find-template");
-const config = require("./config");
+const config = require("./../config");
 
 module.exports = function(app) {
     //Sometime later we might want to do something with the favicon.ico.
@@ -11,10 +11,9 @@ module.exports = function(app) {
     });
 
     app.get("*", function(req, res) {
-        subdomain = getSubdomain(req);
-        var templatePath = template.find(req, subdomain);
+        var templatePath = template.find(req);
         if (templatePath) {
-            getTaitanData(req.path, subdomain, function(taitanData) {
+            getTaitanData(req.path, function(taitanData) {
                 if (taitanData) {
                     res.render(templatePath, taitanData);
                 } else {
@@ -27,21 +26,10 @@ module.exports = function(app) {
     });
 }
 
-// Concatenates the subdomains so we don't have to handle multiple ones.
-function getSubdomain(req) {
-    if (req.subdomains && req.subdomains.length > 0) {
-        // We do not have subdomains.
-        // Template should be located in
-        return req.subdomains.join();
-    } else {
-        return "www"; // Default if there is no subdomain.
-    }
-}
-
 // does not handle subdomain differentiation.
-function getTaitanData(path, subdomain, callback) {
+function getTaitanData(path, callback) {
     var options = {
-        host: config.subdomainData[subdomain].taitanHost,
+        host: config.taitanHost,
         path: path,
         method: "GET"
     }
@@ -72,7 +60,7 @@ function getTaitanData(path, subdomain, callback) {
         });
     };
     var request;
-    if(config.subdomainData[subdomain].https) {
+    if(config.https) {
         request = https.request(options, requestCallback);
     } else {
         request = http.request(options, requestCallback);

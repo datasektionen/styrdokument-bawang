@@ -1,8 +1,8 @@
-var express = require("./express");
+var express = require("./gloo/express");
 var config = require("./config");
 
 var app = express();
-require("./routes")(app);
+require("./gloo/routes")(app);
 
 app.listen(config.port);
 // Not using debug because it's always nice to know stuff's started running.

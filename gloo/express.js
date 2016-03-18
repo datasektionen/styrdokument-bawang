@@ -1,13 +1,12 @@
 const express = require("express");
 const cons = require("consolidate");
 const debug = require("debug")("gloo:express")
-const config = require("./config");
+const config = require("./../config");
 
 
 module.exports = function() {
     var app = express();
-    app.set("views", "./templates");
-    registerSupportedEngines(app);
+    app.set("views", "./" + config.templateDir);
     return app;
 }
 
