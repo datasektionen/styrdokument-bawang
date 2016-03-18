@@ -23,7 +23,7 @@ module.exports = function(app) {
                 if (taitanData)
                     res.render(templatePath, taitanData);
                 else
-                    res.render("_404");
+                    res.render("_404." + config.extension);
             });
         else
             res.send("404: The page could not be found and this gloo instance contains no 404 template");
