@@ -10,4 +10,4 @@ module.exports = function() {
     app.engine(config.extension, cons[config.engine]);
     debug("registered view engine: " + config.engine);
     return app;
-}
+};
