@@ -7,13 +7,7 @@ const config = require("./../config");
 module.exports = function() {
     var app = express();
     app.set("views", "./" + config.templateDir);
+    app.engine(config.extension, cons[config.engine]);
+    debug("registered view engine: " + config.engine);
     return app;
-}
-
-function registerSupportedEngines(app) {
-    for (var engineName in config.supportedEngines) {
-        var engineDesc = config.supportedEngines[engineName];
-        app.engine(engineDesc.extension, cons[engineDesc.engine]);
-        debug("registered view engine: " + engineDesc.extension);
-    }
 }
