@@ -8,7 +8,7 @@ module.exports = {
     port: process.env.PORT || 5000,
 
     // Hostname of the Taitan instance, and whether to communicate over HTTPS with it
-    taitanHost: "docs-taitan.datasektionen.se",
+    taitanHost: "taitan.datasektionen.se",
     https: false,
 
     // The name of the template engine as it's called by consolidate.js, may differ from extension
