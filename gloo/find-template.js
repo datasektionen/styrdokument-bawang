@@ -9,6 +9,9 @@ exports.find = function(req) {
     var pathToLookIn = path.resolve("./" + config.templateDir + "/" + req.path);
     debug("PATH: " + pathToLookIn);
 
+    if (req.path === "/")
+        return resolveTemplate(config.templateDir + "/" + config.defaultTemplate);
+
     var result;
 
     var explicitTemplatePath = resolveTemplate(pathToLookIn);
