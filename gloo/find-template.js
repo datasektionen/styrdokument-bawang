@@ -10,23 +10,34 @@ const config = require("./../config");
  */
 exports.find = function(req) {
 
-    var searchPath = path.dirname(req.path) + '/' + path.basename(req.path);
+    var searchPath = req.path;
 
-    // 1. Look for the exact path template
+    // 1. Root URL always renders default template
+    if (req.path === "/")
+        return config.defaultTemplate + "." + config.extension;
+
+    // 2. Look for the exact path template
     var resolved = resolveTemplate(searchPath);
 
     // Remove trailing file name to switch to directory-based search mode
     searchPath = path.dirname(searchPath);
 
-    // 2. Traverse the directory tree upwards
+    // 3. Traverse the directory tree upwards
+    // If nothing more specific exists, this will fallback to site default template
     while (resolved === undefined) {
+        debug("SearchPath is " + searchPath);
+        debug("Looking for " + path.join(searchPath, config.defaultTemplate));
         resolved = resolveTemplate(path.join(searchPath, config.defaultTemplate));
         searchPath = path.normalize(searchPath + "/..");
     }
 
-    // 3. Fallback to site default template
+    // If no default template is provided, throw error
     if (resolved === undefined)
-        resolved = config.defaultTemplate + "." + config.extension;
+        return console.error("Fatal error: Site has no default template file. Check your config.");
+
+    // Remove starting slash from path
+    if (resolved.startsWith('/'))
+        resolved = resolved.substr(1);
 
     return resolved;
 };
