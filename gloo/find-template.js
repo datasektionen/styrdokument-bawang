@@ -6,11 +6,11 @@ const config = require("./../config");
 // Finds the template file that fits the request.
 //We should at least always deliver the toplevel default file.
 exports.find = function(req) {
-    var pathToLookIn = path.resolve("./" + config.templateDir + "/" + req.path);
+    var pathToLookIn = path.resolve(req.path);
     debug("PATH: " + pathToLookIn);
 
     if (req.path === "/")
-        return resolveTemplate(config.templateDir + "/" + config.defaultTemplate);
+        return resolveTemplate(config.defaultTemplate);
 
     var result;
 
@@ -62,7 +62,7 @@ function defaultTemplateOf(pathToLookIn) {
 function resolveTemplate(fullPath) {
     var fullPathWithExt = fullPath + "." + config.extension;
     try {
-        fs.accessSync(fullPathWithExt);
+        fs.accessSync(config.templateDir + "/" + fullPathWithExt);
         return fullPathWithExt;
     } catch (e) {
         debug("Could not find file " + fullPathWithExt);
