@@ -8,6 +8,6 @@ module.exports = function() {
     var app = express();
     app.set("views", "./" + config.templateDir);
     app.engine(config.extension, cons[config.engine]);
-    debug("registered view engine: " + config.engine);
+    debug("Registered view engine: " + config.engine + ".");
     return app;
 };

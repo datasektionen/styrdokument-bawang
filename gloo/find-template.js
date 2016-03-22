@@ -6,7 +6,8 @@ const config = require("./../config");
 /**
  * Finds the template file that fits the request
  *
- * @param req       Express request object
+ * @param req         Express request object
+ * @returns resolved  Resolved template file path
  */
 exports.find = function(req) {
 
@@ -16,7 +17,7 @@ exports.find = function(req) {
     if (req.path === "/")
         return config.defaultTemplate + "." + config.extension;
 
-    // 2. Look for the exact path template
+    // 2. Look for the exact path template - if found, step 3 will be skipped
     var resolved = resolveTemplate(searchPath);
 
     // Remove trailing file name to switch to directory-based search mode

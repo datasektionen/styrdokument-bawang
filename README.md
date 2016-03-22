@@ -3,7 +3,7 @@
 
 An app for taking data from Taitan (or similar) and rendering it according to templates, returns html to the user.
 
-## Procedure:
+### What it does:
  1. We listen for e.g. `GET gloo.datasektionen.se/stuff/abc`
  2. We `GET taitan.datasektionen.se/stuff/abc`, this is the data that will be rendered.
  3. Determine which template we should use. First look for `/templates/gloo/stuff/abc.*` (where * are all our supported engine extensions).
@@ -14,18 +14,20 @@ An app for taking data from Taitan (or similar) and rendering it according to te
  4. Render the data with the given template.
  5. Send back the rendered html to the user.
 
-## Adding a template engine
+## Development
+
+### Adding a template engine
  1. Go to [consolidatejs](https://www.npmjs.com/package/consolidate) and make sure the engine is supported.
  2. Add the engine to `package.json`
  3. Add the engine name in consolidate and extension to `config.js`
  4. Do `npm install` to install the new engine.
  5. Done.
 
-## Writing templates
+### Writing templates
 The variables passed to the template engine are the same ones that Taitan sends, with no processing applied.
 So look there for documentation.
 
-## Debugging
+### Debug messages
 To see debug messages, run with "DEBUG=gloo:\*".
 On windows, it's an environment variable, so run "set DEGUB=gloo:\*" before starting the app instead.
 When writing debug messages, see find-template.js for reference instead of using console.log().
