@@ -3,18 +3,20 @@ const fs = require("fs");
 const debug = require("debug")("gloo:find-template");
 const config = require("./../config");
 
+exports.find = findTemplate;
+
 /**
  * Finds the template file that fits the request
  *
  * @param req         Express request object
  * @returns resolved  Resolved template file path
  */
-exports.find = function(req) {
+function findTemplate(req) {
 
     var searchPath = req.path;
 
     // 1. Root URL always renders default template
-    if (req.path === "/")
+    if (searchPath === "/")
         return config.defaultTemplate + "." + config.extension;
 
     // 2. Look for the exact path template - if found, step 3 will be skipped
@@ -36,9 +38,11 @@ exports.find = function(req) {
     if (resolved === undefined)
         return console.error("Fatal error: Site has no default template file. Check your config.");
 
+
     // Remove starting slash from path
     if (resolved.startsWith(path.sep))
         resolved = resolved.substr(1);
+
 
     return resolved;
 };
@@ -52,14 +56,39 @@ exports.find = function(req) {
  */
 function resolveTemplate(fullPath) {
 
-    var fullPathWithExt = fullPath + "." + config.extension;
+    var fullPathWithExt = path.normalize(fullPath + "." + config.extension);
 
     try {
-        fs.accessSync(config.templateDir + "/" + fullPathWithExt);
+        fs.accessSync(config.templateDir + path.sep + fullPathWithExt);
         return fullPathWithExt;
     } catch (e) {
         debug("Could not find file " + fullPathWithExt)
     }
 
     return undefined;
+}
+
+
+//== TESTS ================
+// These tests only work for what's in template_example
+
+exports.test = function(assert) {
+    const defaultTemplateFile = config.defaultTemplate + "." + config.extension;
+
+    assert.equals(defaultTemplateFile,
+        findTemplate({path:"/"}),
+        "Root URL always renders default template.");
+
+    assert.equals("_404." + config.extension,
+        findTemplate({path:"/_404"}),
+        "Should be able to find a specific file.");
+
+    assert.equals(defaultTemplateFile,
+        findTemplate({path:"/noTemplateForThisOne"}),
+        "Should give default file when asked for one without template.");
+
+    assert.equals(defaultTemplateFile,
+        findTemplate({"path":"/foo/bar"}),
+        "Should be able to climb out of a directory and give default file.");
+
 }

@@ -17,12 +17,12 @@ function assert(assertion, explanation) {
 
 assert.equals = function(expected, actual, explanation) {
     counter++;
-    if (expected !== actual) {
+    if (expected === actual) {
+        debug("Test " + counter + " succeeded.")
+    } else {
         console.log("Test failed: \"" + explanation + "\" because I expected:");
         console.log(expected + " but got " + actual);
         failCounter++;
-    } else {
-        debug("Test " + counter + " succeeded.")
     }
 }
 
