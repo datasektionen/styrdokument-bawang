@@ -1,6 +1,7 @@
 const https = require("https");
 const http = require("http");
 const debug = require("debug")("gloo:routes");
+const dump = require("./dump-error");
 const template = require("./find-template");
 const config = require("./../config");
 const express = require("express");
@@ -15,9 +16,10 @@ module.exports = function(app) {
 
     // All requests that are not static files should be resolved
     app.get("*", (req, res) => {
-        
+
+        debug("General request received.");
         var templatePath = template.find(req);
-        
+
         if (templatePath)
             getTaitanData(req.path, function(taitanData) {
                 if (taitanData)
@@ -52,6 +54,8 @@ function getTaitanData(path, callback) {
                     callback(responseObject);
                 } catch(e) {
                     debug("Taitan parsing error: " + e);
+                    dump({"taitanData": collectedData,
+                          "requestOptions": options});
                 }
             } else {
                 callback(undefined);
@@ -60,13 +64,13 @@ function getTaitanData(path, callback) {
 
         res.on("error", (err) => debug("Taitan connection error: " + err));
     };
-    
-    
+
+
     var request;
     if(config.https)
         request = https.request(options, requestCallback);
     else
         request = http.request(options, requestCallback);
-    
+
     request.end();
 }

@@ -37,7 +37,7 @@ exports.find = function(req) {
         return console.error("Fatal error: Site has no default template file. Check your config.");
 
     // Remove starting slash from path
-    if (resolved.startsWith('/'))
+    if (resolved.startsWith(path.sep))
         resolved = resolved.substr(1);
 
     return resolved;
