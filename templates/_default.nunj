@@ -4,7 +4,7 @@
     <head>
         <meta charset="utf-8" />
         <title>{{ title }} - Datasektionens styrdokument</title>
-        <link rel="stylesheet" href="{{ static }}/static/css/compiled.css" />
+        <link rel="stylesheet" href="{{ static }}" />
         <script type="text/javascript">
           window.tbaas_conf = {
             system_name: "styrdokument",
