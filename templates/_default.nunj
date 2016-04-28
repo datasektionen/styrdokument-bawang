@@ -1,4 +1,4 @@
-{% set static = "http://aurora.datasektionen.se" %}
+{% set static = "http://aurora.froyo.datasektionen.se" %}
 <!DOCTYPE html>
 <html>
     <head>
