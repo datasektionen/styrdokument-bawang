@@ -1,0 +1,90 @@
+{% set static = "http://localhost:8000" %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>{{ title }} - Datasektionens styrdokument</title>
+        <link rel="stylesheet" href="{{ static }}/static/css/compiled.css" />
+        <script type="text/javascript">
+          window.tbaas_conf = {
+            system_name: "styrdokument",
+            target_id: "methone-container-replace",
+            primary_color: "#fcda04",
+            topbar_items: [
+              {
+                str: "Styrdokument",
+                href: "/",
+              },
+              {
+                  str: "Stadgar",
+                  href: "/stadgar/",
+              },
+              {
+                  str: "Reglemente",
+                  href: "/reglemente/",
+              }
+            ]
+          }
+        </script>
+        <script async src="http://methone.datasektionen.se"></script>
+    </head>
+    <body>
+        <div id="methone-container-replace"></div>
+        <div id="application" class="cerise">
+            <header>
+			    <div class="header-inner">
+			        <div class="row">
+			            <div class="header-left col-md-2">
+			                <a href="/">&laquo; Tillbaka</a>
+			            </div>
+			            <div class="col-md-8">
+			                <h2>{{ title }}</h2>
+			            </div>
+			            <div class="header-right col-md-2">
+			                <span class="visible-lg-inline">Se p&aring;</span>
+			                <a href="https://github.com/datasektionen/Docs" class="primary-action">GitHub</a>
+			            </div>
+			        </div>
+			        <div class="clear"></div>
+			    </div>
+			</header>
+			<div id="content">
+				{% block body %}
+				    <div class="row">
+				        <div class="col-sm-4 col-md-3">
+				            <div id="secondary-nav">
+				            	{% block nav %}
+					                <h3><a href="#">{{ title }}</a></h3>
+					                <ul>
+										{% for child in children %}
+					                    	<li><a href="{{ child.slug }}">{{ child.title }}</a></li>
+										{% endfor %}
+					                </ul>
+					            {% endblock %}
+				            </div>
+				        </div>
+				        <div class="col-sm-8 col-md-9">
+				        	<div class="row">
+				        		<div class="col-sm-9">
+				            		{{ body | safe }}
+				            	</div>
+				            	<div class="col-sm-3" id="sidebar">
+				            		{% block sidebar %}
+				            			<div class="sidebar-card">
+						            		<ul>
+							            		{% for anchor in anchors %}
+							            			<li><a href="#{{ anchor.id }}">{{ anchor.value }}</a></li>
+												{% endfor %}
+											</ul>
+										</div>
+									{% endblock %}
+				            	</div>
+				            </div>
+				        </div>
+				        <div class="clear"></div>
+				    </div>
+				{% endblock %}
+			</div>
+        </div>
+    </body>
+</html>
