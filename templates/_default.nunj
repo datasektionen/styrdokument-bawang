@@ -53,15 +53,43 @@
 				    <div class="row">
 				        <div class="col-sm-4 col-md-3">
 				            <div id="secondary-nav">
-				            	{% block nav %}
-					                <h3><a href="#">{{ title }}</a></h3>
-					                <ul>
-										{% for child in children %}
-					                    	<li><a href="{{ child.slug }}">{{ child.title }}</a></li>
+						{% block navigation %}
+							{% set levelTwo = false %}
+							{% for topItem in nav %}
+								{% if topItem.expanded or topItem.active %}
+									{% set levelTwo = true %}
+									<h3><a href="{{ topItem.slug }}">{{ topItem.title }}</a></h3>
+									<ul>
+										<li>
+											<a {% if topItem.active %} class="text-theme-color strong" {% endif %}
+													href="{{ topItem.slug }}">{{ topItem.title }}</a>
+										</li>
+										{% for item in topItem.nav %}
+											<li><a {% if item.active %} class="text-theme-color strong" {% endif %}
+														href="{{ item.slug }}">{{ item.title }}</a></li>
+											{% if item.nav %}
+												<ul>
+													{% for child in item.nav %}
+														<li><a href="{{ child.slug }}">{{ child.title }}</a></li>
+													{% endfor %}
+												</ul>
+											{% endif %}
 										{% endfor %}
-					                </ul>
-					            {% endblock %}
-				            </div>
+									</ul>
+								{% endif %}
+							{% endfor %}
+							{% if not levelTwo %}
+								<h3><a href="/">{{ title }}</a></h3>
+								{% for topItem in nav %}
+									<ul>
+										<li>
+											<a href="{{ topItem.slug }}">{{ topItem.title }}</a>
+										</li>
+									</ul>
+								{% endfor %}
+							{% endif %}
+						{% endblock %}
+					</div>
 				        </div>
 				        <div class="col-sm-8 col-md-9">
 				        	<div class="row">
