@@ -1,4 +1,4 @@
-{% set static = "http://localhost:8000" %}
+{% set static = "http://aurora.datasektionen.se" %}
 <!DOCTYPE html>
 <html>
     <head>
