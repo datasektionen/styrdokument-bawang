@@ -55,7 +55,7 @@
 				        <div class="col-sm-4 col-md-3">
 				            <div id="secondary-nav">
 						{% block navigation %}
-							<h3><a href="/">{{ title }}</a></h3>
+							<h3><a href="/">Styrdokument</a></h3>
 							{% for topItem in nav %}
 								<ul>
 									<li>
