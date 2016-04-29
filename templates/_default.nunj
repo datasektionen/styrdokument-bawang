@@ -59,7 +59,7 @@
 							{% for topItem in nav %}
 								<ul>
 									<li>
-										<a {% if item.active %} class="text-theme-color strong" {% endif %}
+										<a {% if topItem.active %} class="text-theme-color strong" {% endif %}
 												href="{{ topItem.slug }}">{{ topItem.title }}</a>
 									</li>
 								</ul>
