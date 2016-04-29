@@ -3,6 +3,7 @@
 <html>
     <head>
         <meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>{{ title }} - Datasektionens styrdokument</title>
         <link rel="stylesheet" href="{{ static }}" />
         <script type="text/javascript">
@@ -13,15 +14,15 @@
             topbar_items: [
               {
                 str: "Styrdokument",
-                href: "/",
+                href: "/"
               },
               {
                   str: "Stadgar",
-                  href: "/stadgar/",
+                  href: "/stadgar/"
               },
               {
                   str: "Reglemente",
-                  href: "/reglemente/",
+                  href: "/reglemente/"
               }
             ]
           }
@@ -42,7 +43,7 @@
 			            </div>
 			            <div class="header-right col-md-2">
 			                <span class="visible-lg-inline">Se p&aring;</span>
-			                <a href="https://github.com/datasektionen/Docs" class="primary-action">GitHub</a>
+			                <a href="https://github.com/datasektionen/styrdokument" class="primary-action">GitHub</a>
 			            </div>
 			        </div>
 			        <div class="clear"></div>
@@ -54,40 +55,15 @@
 				        <div class="col-sm-4 col-md-3">
 				            <div id="secondary-nav">
 						{% block navigation %}
-							{% set levelTwo = false %}
+							<h3><a href="/">{{ title }}</a></h3>
 							{% for topItem in nav %}
-								{% if topItem.expanded or topItem.active %}
-									{% set levelTwo = true %}
-									<h3><a href="{{ topItem.slug }}">{{ topItem.title }}</a></h3>
-									<ul>
-										<li>
-											<a {% if topItem.active %} class="text-theme-color strong" {% endif %}
-													href="{{ topItem.slug }}">{{ topItem.title }}</a>
-										</li>
-										{% for item in topItem.nav %}
-											<li><a {% if item.active %} class="text-theme-color strong" {% endif %}
-														href="{{ item.slug }}">{{ item.title }}</a></li>
-											{% if item.nav %}
-												<ul>
-													{% for child in item.nav %}
-														<li><a href="{{ child.slug }}">{{ child.title }}</a></li>
-													{% endfor %}
-												</ul>
-											{% endif %}
-										{% endfor %}
-									</ul>
-								{% endif %}
+								<ul>
+									<li>
+										<a {% if item.active %} class="text-theme-color strong" {% endif %}
+												href="{{ topItem.slug }}">{{ topItem.title }}</a>
+									</li>
+								</ul>
 							{% endfor %}
-							{% if not levelTwo %}
-								<h3><a href="/">{{ title }}</a></h3>
-								{% for topItem in nav %}
-									<ul>
-										<li>
-											<a href="{{ topItem.slug }}">{{ topItem.title }}</a>
-										</li>
-									</ul>
-								{% endfor %}
-							{% endif %}
 						{% endblock %}
 					</div>
 				        </div>
@@ -99,6 +75,7 @@
 				            	<div class="col-sm-3" id="sidebar">
 				            		{% block sidebar %}
 				            			<div class="sidebar-card">
+											<h2>På den här sidan</h2>
 						            		<ul>
 							            		{% for anchor in anchors %}
 							            			<li><a href="#{{ anchor.id }}">{{ anchor.value }}</a></li>
