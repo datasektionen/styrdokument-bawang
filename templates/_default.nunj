@@ -1,4 +1,4 @@
-{% set static = "http://aurora.froyo.datasektionen.se" %}
+{% set static = "//aurora.froyo.datasektionen.se" %}
 <!DOCTYPE html>
 <html>
     <head>
@@ -27,7 +27,12 @@
             ]
           }
         </script>
-        <script async src="http://methone.datasektionen.se"></script>
+        <script async src="//methone.datasektionen.se"></script>
+        <style type="text/css">
+        	#methone-container-replace::shadow #methone_header {
+			  background: #e83d84 !important;
+			}
+        </style>
     </head>
     <body>
         <div id="methone-container-replace"></div>
