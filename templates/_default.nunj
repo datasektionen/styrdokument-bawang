@@ -10,7 +10,9 @@
           window.tbaas_conf = {
             system_name: "styrdokument",
             target_id: "methone-container-replace",
-            primary_color: "#fcda04",
+            primary_color: "#ec5f99",
+            secondary_color: "white",
+            delta_invert: true,
             topbar_items: [
               {
                 str: "Styrdokument",
