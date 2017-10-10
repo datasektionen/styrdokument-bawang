@@ -24,6 +24,7 @@
     "express": "^4.13.4",
     "handlebars": "^4.0.5",
     "jade": "^1.11.0",
+    "node-fetch": "^1.7.3",
     "nunjucks": "^2.4.0"
   }
 }

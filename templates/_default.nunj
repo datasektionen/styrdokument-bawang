@@ -3,16 +3,15 @@
 <html>
     <head>
         <meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>{{ title }} - Datasektionens styrdokument</title>
         <link rel="stylesheet" href="{{ static }}" />
         <script type="text/javascript">
-          window.tbaas_conf = {
+          window.methone_conf = {
             system_name: "styrdokument",
-            target_id: "methone-container-replace",
-            primary_color: "#ec5f99",
-            secondary_color: "white",
-            delta_invert: true,
+            color_scheme: "cerice",
+            login_text: "",
+            login_link: "#",
             topbar_items: [
               {
                 str: "Styrdokument",
@@ -29,74 +28,69 @@
             ]
           }
         </script>
-        <script async src="//methone.datasektionen.se"></script>
-        <style type="text/css">
-        	#methone-container-replace::shadow #methone_header {
-			  background: #e83d84 !important;
-			}
-        </style>
+        <script async src="//methone.datasektionen.se/bar.js"></script>
     </head>
     <body>
         <div id="methone-container-replace"></div>
         <div id="application" class="cerise">
             <header>
-			    <div class="header-inner">
-			        <div class="row">
-			            <div class="header-left col-md-2">
-			                <a href="/">&laquo; Tillbaka</a>
-			            </div>
-			            <div class="col-md-8">
-			                <h2>{{ title }}</h2>
-			            </div>
-			            <div class="header-right col-md-2">
-			                <span class="visible-lg-inline">Se p&aring;</span>
-			                <a href="https://github.com/datasektionen/styrdokument" class="primary-action">GitHub</a>
-			            </div>
-			        </div>
-			        <div class="clear"></div>
-			    </div>
-			</header>
-			<div id="content">
-				{% block body %}
-				    <div class="row">
-				        <div class="col-sm-4 col-md-3">
-				            <div id="secondary-nav">
-						{% block navigation %}
-							<h3><a href="/">Styrdokument</a></h3>
-							{% for topItem in nav %}
-								<ul>
-									<li>
-										<a {% if topItem.active %} class="text-theme-color strong" {% endif %}
-												href="{{ topItem.slug }}">{{ topItem.title }}</a>
-									</li>
-								</ul>
-							{% endfor %}
-						{% endblock %}
-					</div>
-				        </div>
-				        <div class="col-sm-8 col-md-9">
-				        	<div class="row">
-				        		<div class="col-sm-9">
-				            		{{ body | safe }}
-				            	</div>
-				            	<div class="col-sm-3" id="sidebar">
-				            		{% block sidebar %}
-				            			<div class="sidebar-card">
-											<h2>På den här sidan</h2>
-						            		<ul>
-							            		{% for anchor in anchors %}
-							            			<li><a href="#{{ anchor.id }}">{{ anchor.value }}</a></li>
-												{% endfor %}
-											</ul>
-										</div>
-									{% endblock %}
-				            	</div>
-				            </div>
-				        </div>
-				        <div class="clear"></div>
-				    </div>
-				{% endblock %}
-			</div>
+                <div class="header-inner">
+                    <div class="row">
+                        <div class="header-left col-md-2">
+                            <a href="/">&laquo; Tillbaka</a>
+                        </div>
+                        <div class="col-md-8">
+                            <h2>{{ title }}</h2>
+                        </div>
+                        <div class="header-right col-md-2">
+                            <span class="visible-lg-inline">Se p&aring;</span>
+                            <a href="https://github.com/datasektionen/styrdokument" class="primary-action">GitHub</a>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </header>
+            <div id="content">
+                {% block body %}
+                    <div class="row">
+                        <div class="col-sm-4 col-md-3">
+                            <div id="secondary-nav">
+                        {% block navigation %}
+                            <h3><a href="/">Styrdokument</a></h3>
+                            {% for topItem in nav %}
+                                <ul>
+                                    <li>
+                                        <a {% if topItem.active %} class="text-theme-color strong" {% endif %}
+                                                href="{{ topItem.slug }}">{{ topItem.title }}</a>
+                                    </li>
+                                </ul>
+                            {% endfor %}
+                        {% endblock %}
+                    </div>
+                        </div>
+                        <div class="col-sm-8 col-md-9">
+                            <div class="row">
+                                <div class="col-sm-9">
+                                    {{ body | safe }}
+                                </div>
+                                <div class="col-sm-3" id="sidebar">
+                                    {% block sidebar %}
+                                        <div class="sidebar-card">
+                                            <h2>På den här sidan</h2>
+                                            <ul>
+                                                {% for anchor in anchors %}
+                                                    <li><a href="#{{ anchor.id }}">{{ anchor.value }}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    {% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                {% endblock %}
+            </div>
         </div>
     </body>
 </html>
