@@ -1,6 +1,5 @@
 .idea
 node_modules
-static
 gruntfile.js
 gulpfile.js
 gloo_errors.txt

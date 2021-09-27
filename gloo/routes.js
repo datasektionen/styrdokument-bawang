@@ -5,8 +5,6 @@ const config = require("./../config");
 const express = require("express");
 
 module.exports = function(app) {
-    //Sometime later we might want to do something with the favicon.ico.
-    app.get("/favicon.ico", (req, res) => res.status(404).send());
 
     // Static assets will be available on the same path as their directory,
     // i.e. assets => /assets, static => /static
