@@ -66,14 +66,16 @@
                             </a></h3>
                             {% for topItem in nav %}
                                 {% if topItem.expanded %}
-                                    <h3><a {% if topItem.active %} class="text-theme-color strong" {% endif %}
-                                        href="{{ topItem.slug }}"
-                                    >
-                                        {{topItem.title}}
-                                    </a></h3>
+                                    <h3 style="margin-top: 1rem;">
+                                        <a {% if topItem.active %} class="text-theme-color strong" {% endif %}
+                                            href="{{ topItem.slug }}"
+                                        >
+                                            {{topItem.title}}
+                                        </a>
+                                    </h3>
                                     {% for subItem in topItem.nav %} 
                                         <ul>
-                                            <li>
+                                            <li style="margin-left: 2rem;">
                                                 <a {% if subItem.active %} class="text-theme-color strong" {% endif %}
                                                     href="{{ subItem.slug }}"
                                                 >
@@ -82,7 +84,7 @@
                                             </li>
                                         </ul>
                                     {% endfor %}
-
+                                    <p style="margin-bottom: 1rem;"/>
                                 {% else %}
                                     <ul>
                                         <li>
