@@ -63,12 +63,32 @@
                         {% block navigation %}
                             <h3><a href="/">Styrdokument</a></h3>
                             {% for topItem in nav %}
-                                <ul>
-                                    <li>
-                                        <a {% if topItem.active %} class="text-theme-color strong" {% endif %}
-                                                href="{{ topItem.slug }}">{{ topItem.title }}</a>
-                                    </li>
-                                </ul>
+                                {% if topItem.expanded %}
+                                    <h3><a {% if topItem.active %} class="text-theme-color strong" {% endif %}
+                                        href="{{ topItem.slug }}"
+                                    >
+                                        {{topItem.title}}
+                                    </a></h3>
+                                    {% for subItem in topItem.nav %} 
+                                        <ul>
+                                            <li>
+                                                <a {% if subItem.active %} class="text-theme-color strong" {% endif %}
+                                                    href="{{ subItem.slug }}"
+                                                >
+                                                    {{ subItem.title }}
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    {% endfor %}
+
+                                {% else %}
+                                    <ul>
+                                        <li>
+                                            <a {% if topItem.active %} class="text-theme-color strong" {% endif %}
+                                                    href="{{ topItem.slug }}">{{ topItem.title }}</a>
+                                        </li>
+                                    </ul>
+                                {% endif %}
                             {% endfor %}
                         {% endblock %}
                     </div>
