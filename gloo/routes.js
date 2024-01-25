@@ -50,7 +50,6 @@ module.exports = function(app) {
                     else {
                         data.nav.sort(comparePages)
                         data.nav.forEach(item => {
-                            console.log(item)
                             if (item.nav) {
                                 item.nav.sort(comparePages)
                             } 
