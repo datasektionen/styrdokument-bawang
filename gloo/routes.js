@@ -4,6 +4,22 @@ const template = require("./find-template");
 const config = require("./../config");
 const express = require("express");
 
+const comparePages = (a, b) => {
+    if (a.sort === b.sort) {
+        if (a.title === b.title) return 0
+        if (a.title === undefined) return 1;
+        if (b.title === undefined) return -1;
+
+        return a.title.localeCompare(b.title, 'sv-SE') // the comparison ignores case
+    }
+
+    if (a.sort === undefined) return 1;
+    if (b.sort === undefined) return -1;
+
+    return (a.sort - b.sort);
+}
+
+
 module.exports = function(app) {
 
     // Static assets will be available on the same path as their directory,
@@ -31,8 +47,16 @@ module.exports = function(app) {
                 .then(data => {
                     if(data.fuzzes)
                         res.send(data)
-                    else
+                    else {
+                        data.nav.sort(comparePages)
+                        data.nav.forEach(item => {
+                            console.log(item)
+                            if (item.nav) {
+                                item.nav.sort(comparePages)
+                            } 
+                        })
                         res.render(templatePath, data)
+                    }
                 })
                 .catch(err => {
                     if (err == 404)
