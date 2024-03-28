@@ -108,7 +108,17 @@
                                             <h2>På den här sidan</h2>
                                             <ul>
                                                 {% for anchor in anchors %}
-                                                    <li><a href="#{{ anchor.id }}">{{ anchor.value }}</a></li>
+                                                    {% if anchor.level < 3 %}
+                                                    <li style="list-style-type: none;">
+                                                        <a href="#{{ anchor.id }}">
+                                                            {% if anchor.level == 1 %}
+                                                                <span style="font-weight: bold;"> {{ anchor.value }} </span>
+                                                            {% else %}
+                                                                <span style="margin-left: 1.5rem;"> {{ anchor.value }}</span>
+                                                            {% endif %}
+                                                        </a>
+                                                    </li>
+                                                    {% endif %}
                                                 {% endfor %}
                                             </ul>
                                         </div>
