@@ -109,12 +109,12 @@
                                             <ul>
                                                 {% for anchor in anchors %}
                                                     {% if anchor.level < 3 %}
-                                                    <li> 
+                                                    <li style="list-style-type: none;">
                                                         <a href="#{{ anchor.id }}">
                                                             {% if anchor.level == 1 %}
                                                                 <span style="font-weight: bold;"> {{ anchor.value }} </span>
                                                             {% else %}
-                                                                {{ anchor.value }}
+                                                                <span style="margin-left: 1.5rem;"> {{ anchor.value }}</span>
                                                             {% endif %}
                                                         </a>
                                                     </li>
