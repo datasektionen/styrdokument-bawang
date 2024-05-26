@@ -46,9 +46,9 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      # - name: Deploy to nomad
-      #   env:
-      #     NOMAD_ADDR: ${{ vars.NOMAD_ADDR }}
-      #     NOMAD_TOKEN: ${{ secrets.NOMAD_TOKEN }}
-      #   run: |
-      #     nomad run -var=image_tag=${{ env.current }} job.nomad.hcl
+      - name: Deploy to nomad
+        env:
+          NOMAD_ADDR: ${{ vars.NOMAD_ADDR }}
+          NOMAD_TOKEN: ${{ secrets.NOMAD_TOKEN }}
+        run: |
+          nomad run -var=image_tag=${{ env.current }} job.nomad.hcl
