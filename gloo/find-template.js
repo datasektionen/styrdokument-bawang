@@ -1,6 +1,5 @@
 const path = require("path");
 const fs = require("fs");
-const debug = require("debug")("gloo:find-template");
 const config = require("./../config");
 
 exports.find = findTemplate;
@@ -28,8 +27,6 @@ function findTemplate(req) {
     // 3. Traverse the directory tree upwards
     // If nothing more specific exists, this will fallback to site default template
     while (resolved === undefined) {
-        debug("SearchPath is " + searchPath);
-        debug("Looking for " + path.join(searchPath, config.defaultTemplate));
         resolved = resolveTemplate(path.join(searchPath, config.defaultTemplate));
         searchPath = path.normalize(searchPath + "/..");
     }
@@ -41,7 +38,7 @@ function findTemplate(req) {
 
     // Remove starting slash from path
     if (resolved.startsWith(path.sep))
-        resolved = resolved.substr(1);
+        resolved = resolved.substring(1);
 
 
     return resolved;
@@ -55,17 +52,14 @@ function findTemplate(req) {
  * @returns         string/undefined
  */
 function resolveTemplate(fullPath) {
-
     var fullPathWithExt = path.normalize(fullPath + "." + config.extension);
 
     try {
         fs.accessSync(config.templateDir + path.sep + fullPathWithExt);
         return fullPathWithExt;
     } catch (e) {
-        debug("Could not find file " + fullPathWithExt)
+        return undefined;
     }
-
-    return undefined;
 }
 
 

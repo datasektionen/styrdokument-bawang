@@ -1,6 +1,5 @@
 const debug = require("debug")("gloo:test");
 
-console.log("These tests should print a finishing message.");
 var counter = 0;
 var failCounter = 0;
 

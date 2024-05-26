@@ -30,8 +30,3 @@ So look there for documentation.
  3. Add the engine name in consolidate and extension to `config.js`
  4. Do `npm install` to install the new engine.
  5. Done.
-
-#### Debug messages
- * To see them, run with `DEBUG=gloo:\*`. On windows it's an environment variable, so run `set DEGUB=gloo:\*` before starting the app instead.
- * When writing debug messages, don't use `console.log()`. Instead, `debug = require(debug)("gloo:foo")` and then just write `debug("A debug message")`. See find-template.js for reference.
- * If you want more fine-grained control of what messages are shown, see the package docs of [debug](https://www.npmjs.com/package/debug).

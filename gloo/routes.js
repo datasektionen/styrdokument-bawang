@@ -1,5 +1,3 @@
-const fetch = require("node-fetch");
-const debug = require("debug")("gloo:routes");
 const template = require("./find-template");
 const config = require("./../config");
 const express = require("express");
@@ -38,7 +36,7 @@ module.exports = function(app) {
                         return response.json()
                     else if (response.ok)
                         if (response.url.indexOf(config.taitanUrl) === 0)
-                            throw response.url.substr(config.taitanUrl.length)
+                            throw response.url.substring(config.taitanUrl.length)
                         else
                             throw response.url
                     else
