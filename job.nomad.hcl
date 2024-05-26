@@ -34,6 +34,10 @@ ENV
         destination = "local/.env"
         env         = true
       }
+
+      resources {
+        memory = 100
+      }
     }
   }
 }
