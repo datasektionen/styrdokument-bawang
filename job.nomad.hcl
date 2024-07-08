@@ -11,10 +11,9 @@ job "styrdokument" {
       port     = "http"
       provider = "nomad"
       tags = [
-        "traefik-external.enable=true",
-        "traefik-external.http.routers.styrdokument.rule=Host(`styrdokument.datasektionen.se`)",
-        "traefik-external.http.routers.styrdokument.entrypoints=websecure",
-        "traefik-external.http.routers.styrdokument.tls.certresolver=default",
+        "traefik.enable=true",
+        "traefik.http.routers.styrdokument.rule=Host(`styrdokument.datasektionen.se`)",
+        "traefik.http.routers.styrdokument.tls.certresolver=default",
       ]
     }
 
