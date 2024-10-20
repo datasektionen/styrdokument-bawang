@@ -11,6 +11,7 @@
         <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
         <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
         <link rel="shortcut icon" href="/static/favicon.ico">
+        <style> h1, h2, h3, h4, h5, h6 { scroll-margin-top: 60px; } </style>
         <script type="text/javascript">
           window.methone_conf = {
             system_name: "styrdokument",
@@ -60,42 +61,42 @@
                     <div class="row">
                         <div class="col-sm-4 col-md-3">
                             <div id="secondary-nav">
-                        {% block navigation %}
-                            <h2 style="text-align: center; border-bottom: 2px solid #eee; padding-bottom: 1.2rem;">
-                                <a href="/"> Styrdokument </a>
-                            </h2>
-                            {% for topItem in nav %}
-                                {% if topItem.expanded %}
-                                    <h3 style="margin-top: 1rem;">
-                                        <a {% if topItem.active %} class="text-theme-color strong" {% endif %}
-                                            href="{{ topItem.slug }}"
-                                        >
-                                            {{topItem.title}}
-                                        </a>
-                                    </h3>
-                                    {% for subItem in topItem.nav %} 
-                                        <ul>
-                                            <li style="margin-left: 2rem;">
-                                                <a {% if subItem.active %} class="text-theme-color strong" {% endif %}
-                                                    href="{{ subItem.slug }}"
+                                {% block navigation %}
+                                    <h2 style="text-align: center; border-bottom: 2px solid #eee; padding-bottom: 1.2rem;">
+                                        <a href="/"> Styrdokument </a>
+                                    </h2>
+                                    {% for topItem in nav %}
+                                        {% if topItem.expanded %}
+                                            <h3 style="margin-top: 1rem;">
+                                                <a {% if topItem.active %} class="text-theme-color strong" {% endif %}
+                                                    href="{{ topItem.slug }}"
                                                 >
-                                                    {{ subItem.title }}
+                                                    {{topItem.title}}
                                                 </a>
-                                            </li>
-                                        </ul>
+                                            </h3>
+                                            {% for subItem in topItem.nav %} 
+                                                <ul>
+                                                    <li style="margin-left: 2rem;">
+                                                        <a {% if subItem.active %} class="text-theme-color strong" {% endif %}
+                                                            href="{{ subItem.slug }}"
+                                                        >
+                                                            {{ subItem.title }}
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            {% endfor %}
+                                            <p style="margin-bottom: 1rem;"/>
+                                        {% else %}
+                                            <ul>
+                                                <li>
+                                                    <a {% if topItem.active %} class="text-theme-color strong" {% endif %}
+                                                            href="{{ topItem.slug }}">{{ topItem.title }}</a>
+                                                </li>
+                                            </ul>
+                                        {% endif %}
                                     {% endfor %}
-                                    <p style="margin-bottom: 1rem;"/>
-                                {% else %}
-                                    <ul>
-                                        <li>
-                                            <a {% if topItem.active %} class="text-theme-color strong" {% endif %}
-                                                    href="{{ topItem.slug }}">{{ topItem.title }}</a>
-                                        </li>
-                                    </ul>
-                                {% endif %}
-                            {% endfor %}
-                        {% endblock %}
-                    </div>
+                                {% endblock %}
+                            </div>
                         </div>
                         <div class="col-sm-8 col-md-9">
                             <div class="row">
