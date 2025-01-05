@@ -1,7 +1,6 @@
 {% set static = "//aurora.datasektionen.se" %}
 <!DOCTYPE html>
 <html>
-
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -18,21 +17,21 @@
                 color_scheme: "cerise",
                 {% if lang == "en" %}
                     login_text: "Svenska",
-                    login_link: "#",
+                    login_href: "{{slug}}?lang=sv",
                 {% else %}
                     login_text: "English",
-                    login_link: "#",
+                    login_href: "{{slug}}?lang=en",
                 {% endif %}
                 links: [
                     {
                         str: "Styrdokument",
-                        href: "/"
+                        href: "/?lang={{lang}}"
                     }, {
                         str: "Stadgar",
-                        href: "/stadgar/"
+                        href: "/stadgar/?lang={{lang}}"
                     }, {
                         str: "Reglemente",
-                        href: "/reglemente/"
+                        href: "/reglemente/?lang={{lang}}"
                     }
                 ]
             }
@@ -73,7 +72,7 @@
                                         {% if topItem.expanded %}
                                             <h3 style="margin-top: 1rem;">
                                                 <a {% if topItem.active %} class="text-theme-color strong" {% endif %}
-                                href="{{ topItem.slug }}">
+                                href="{{ topItem.slug }}?lang={{lang}}">
                                                     {{topItem.title}}
                                                 </a>
                                             </h3>
@@ -81,7 +80,7 @@
                                                 <ul>
                                                     <li style="margin-left: 2rem;">
                                                         <a {% if subItem.active %} class="text-theme-color strong" {% elif not subItem.exists %}
-                                    style="color: #bbb" {% endif %} href="{{ subItem.slug }}">
+                                    style="color: #bbb" {% endif %} href="{{ subItem.slug }}?lang={{lang}}">
                                                             {{ subItem.title }}
                                                         </a>
                                                     </li>
@@ -92,7 +91,7 @@
                                             <ul>
                                                 <li>
                                                     <a {% if topItem.active %} class="text-theme-color strong" {% elif not topItem.exists %}
-                                    style="color: #bbb" {% endif %} href="{{ topItem.slug }}">
+                                    style="color: #bbb" {% endif %} href="{{ topItem.slug }}?lang={{lang}}">
                                                         {{ topItem.title }}
                                                     </a>
                                                 </li>
