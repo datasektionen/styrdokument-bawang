@@ -28,11 +28,13 @@ module.exports = function(app) {
     app.get("*", (req, res) => {
 
         var templatePath = template.find(req);
+        var lang = req.query?.lang ?? config.defaultLang;
+        const url = `${config.taitanUrl}${req.path}?lang=${lang}`;
 
         if (templatePath)
-            fetch(config.taitanUrl + req.path)
+            fetch(url)
                 .then(response => {
-                    if (response.ok && response.url === config.taitanUrl + req.path)
+                    if (response.ok && response.url === url)
                         return response.json()
                     else if (response.ok)
                         if (response.url.indexOf(config.taitanUrl) === 0)
