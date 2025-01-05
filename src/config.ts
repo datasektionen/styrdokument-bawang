@@ -17,7 +17,7 @@ export default {
     defaultTemplate: "_default",
 
     // Directories this gloo instance uses to source its content
-    templateDir: "src/templates",
+    templateDir: "templates",
     staticDir: "static",
 
     // language handling

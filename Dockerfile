@@ -1,15 +1,28 @@
-FROM node:21-alpine3.19
+FROM node:21-alpine3.19 AS build
 
 WORKDIR /app
 
-ENV NODE_ENV=production
-
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json tsconfig.json ./
+COPY src src
 
 RUN npm ci
 
-COPY src src
-COPY static static
+RUN npm run tsc
+# RUN tsc
 
-RUN npm run tcs
-CMD ["npm", "run", "start"]
+
+FROM node:21-alpine3.19
+
+ENV NODE_ENV=production
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY --from=build app/dist dist
+COPY static static
+COPY templates templates
+
+CMD ["node", "dist"]
+
