@@ -46,9 +46,13 @@ const mergeNavs = (base: Nav, add: Nav | undefined) => {
             return o.slug === item.slug;
         });
 
+
         return o ? {
-            ...o,
-            exists: true,
+            ...item,
+            ...(o.title !== '' ? {
+                title: o.title,
+                exists: true,
+            } : {}),
             nav: item.nav && mergeNavs(item.nav, o.nav),
         } : item;
     })

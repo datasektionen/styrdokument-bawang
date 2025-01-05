@@ -76,7 +76,12 @@
                                     {% for subItem in topItem.nav %} 
                                         <ul>
                                             <li style="margin-left: 2rem;">
-                                                <a {% if subItem.active %} class="text-theme-color strong" {% endif %}
+                                                <a 
+                                                    {% if topItem.active %} 
+                                                        class="text-theme-color strong" 
+                                                    {% elif not topItem.exists %}
+                                                        style="color: #aaa"
+                                                    {% endif %}
                                                     href="{{ subItem.slug }}"
                                                 >
                                                     {{ subItem.title }}
@@ -88,7 +93,12 @@
                                 {% else %}
                                     <ul>
                                         <li>
-                                            <a {% if topItem.active %} class="text-theme-color strong" {% endif %}
+                                            <a 
+                                            {% if topItem.active %} 
+                                                class="text-theme-color strong" 
+                                            {% elif not topItem.exists %}
+                                                style="color: #aaa"
+                                            {% endif %}
                                                     href="{{ topItem.slug }}">{{ topItem.title }}</a>
                                         </li>
                                     </ul>
