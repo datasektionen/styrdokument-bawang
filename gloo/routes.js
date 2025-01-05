@@ -15,10 +15,55 @@ const comparePages = (a, b) => {
     if (b.sort === undefined) return -1;
 
     return (a.sort - b.sort);
+};
+
+const deepSortNav = (nav) => {
+    nav.sort(comparePages)
+    nav.forEach(item => {
+        if (item.nav) {
+            deepSortNav(item.nav);
+        }
+    })
+}
+
+const mergeNavs = (base, add) => {
+    base.forEach(item => {
+        const o = add.find((v, id, o) => {
+            return o.slug == item.slug;
+        });
+
+        if (o !== undefined) {
+            item = {
+                ...o,
+                exists: true,
+                nav: mergeNavs(item.nav, o.nav),
+            }
+        };
+    })
+};
+
+const fetchTaitanData = (path, lang) => {
+    const url = `${config.taitanUrl}${path}?lang=${lang}`;
+
+    return fetch(url)
+        .then(response => {
+            if (response.ok && response.url === url)
+                return response.json()
+            else if (response.ok)
+                // ????
+                if (response.url.indexOf(config.taitanUrl) === 0)
+                    throw response.url.substring(config.taitanUrl.length)
+                else
+                    throw response.url
+            else
+                throw response.status
+        })
 }
 
 
-module.exports = function(app) {
+
+
+module.exports = function (app) {
 
     // Static assets will be available on the same path as their directory,
     // i.e. assets => /assets, static => /static
@@ -27,33 +72,28 @@ module.exports = function(app) {
     // All requests that are not static files should be resolved
     app.get("*", (req, res) => {
 
-        var templatePath = template.find(req);
-        var lang = req.query?.lang ?? config.defaultLang;
-        const url = `${config.taitanUrl}${req.path}?lang=${lang}`;
+        const templatePath = template.find(req);
+        const lang = req.query?.lang ?? config.defaultLang;
+        const defaultData = fetchTaitanData(req.path, lang).then(data => {
+            console.log(data);
+            return {
+                nav: data.nav,
+                updatedAt: data.updatedAt
+            };
+        });
 
-        if (templatePath)
-            fetch(url)
-                .then(response => {
-                    if (response.ok && response.url === url)
-                        return response.json()
-                    else if (response.ok)
-                        if (response.url.indexOf(config.taitanUrl) === 0)
-                            throw response.url.substring(config.taitanUrl.length)
-                        else
-                            throw response.url
-                    else
-                        throw response.status
-                })
-                .then(data => {
-                    if(data.fuzzes)
+        if (templatePath) {
+
+            fetchTaitanData(req.path, lang)
+                .then(async (data) => {
+                    if (data.fuzzes) {
                         res.send(data)
+                    }
                     else {
-                        data.nav.sort(comparePages)
-                        data.nav.forEach(item => {
-                            if (item.nav) {
-                                item.nav.sort(comparePages)
-                            } 
-                        })
+                        var d2 = await defaultData;
+                        mergeNavs(d2.nav, data.nav);
+                        data.nav = d2.nav;
+                        deepSortNav(data.nav);
                         res.render(templatePath, data)
                     }
                 })
@@ -65,6 +105,7 @@ module.exports = function(app) {
                     else
                         res.status(500).send("An unexpected error occured. " + err)
                 })
+        }
         else
             return res.status(404).send("404: The page could not be found and this gloo instance contains no 404 template");
 
