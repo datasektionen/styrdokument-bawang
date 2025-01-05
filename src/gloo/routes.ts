@@ -37,22 +37,21 @@ const deepSortNav = (nav: Nav) => {
     })
 }
 
-const mergeNavs = (base: Nav, add: Nav) => {
-    base.forEach(item => {
-        const o = add.find((o) => {
-            return o.slug == item.slug;
+const mergeNavs = (base: Nav, add: Nav | undefined) => {
+    if (add === undefined) {
+        return base;
+    }
+    return base.map(item => {
+        const o: NavItem | undefined = add.find((o) => {
+            return o.slug === item.slug;
         });
 
-        if (o !== undefined) {
-            item = {
-                ...o,
-                exists: true,
-                nav: mergeNavs(item.nav, o.nav),
-            }
-        };
+        return o ? {
+            ...o,
+            exists: true,
+            nav: item.nav && mergeNavs(item.nav, o.nav),
+        } : item;
     })
-
-    return base;
 };
 
 const fetchTaitanData = async (path: string, lang: string) => {
@@ -60,18 +59,21 @@ const fetchTaitanData = async (path: string, lang: string) => {
 
     return fetch(url)
         .then(response => {
-            if (response.ok && response.url === url)
-                return response.json()
-            else if (response.ok)
-                // ????
+            if (response.ok && response.url === url) {
+                return response.json();
+            } else if (response.ok) {
+                // why do we do this ????
                 if (response.url.indexOf(config.taitanUrl) === 0)
                     throw response.url.substring(config.taitanUrl.length)
                 else
                     throw response.url
-            else
+            } else {
                 throw response.status
+            }
         })
 };
+
+type PageRequest = Request<unknown, unknown, unknown, { lang?: string }>;
 
 export default (app: Express) => {
 
@@ -80,11 +82,11 @@ export default (app: Express) => {
     app.use('/static', express.static(config.staticDir));
 
     // All requests that are not static files should be resolved
-    app.get("*", (req: Request<unknown, unknown, unknown, { lang?: string }>, res: Response) => {
+    app.get("*", (req: PageRequest, res: Response) => {
         const templatePath = template.find(req.path);
         const lang = req.query.lang ?? config.defaultLang;
-        const defaultData = fetchTaitanData(req.path, lang).then(data => {
-            console.log(data);
+        const defaultData = fetchTaitanData(req.path, config.defaultLang).then(data => {
+            // console.log(data);
             return {
                 nav: data.nav,
                 updatedAt: data.updatedAt
@@ -92,27 +94,27 @@ export default (app: Express) => {
         });
 
         if (templatePath) {
-
             fetchTaitanData(req.path, lang)
                 .then(async (data) => {
                     if (data.fuzzes) {
                         res.send(data)
-                    }
-                    else {
-                        var d2 = await defaultData;
-                        mergeNavs(d2.nav, data.nav);
-                        data.nav = d2.nav;
+                    } else {
+                        const baseData = await defaultData;
+                        data.nav = mergeNavs(baseData.nav, data.nav);
+                        console.log(data.nav);
                         deepSortNav(data.nav);
-                        res.render(templatePath, data)
+                        res.render(templatePath, data);
                     }
                 })
-                .catch(err => {
-                    if (err == 404)
+                .catch((err: string | number) => {
+                    if (err == 404) {
                         res.status(404).render("_404." + config.extension, { req: req });
-                    else if (err.startsWith("/") || err.startsWith("http"))
-                        res.redirect(err)
-                    else
-                        res.status(500).send("An unexpected error occured. " + err)
+                    } else if (typeof err === "string" && (err.startsWith("/") || err.startsWith("http"))) {
+
+                        res.redirect(err);
+                    } else {
+                        res.status(500).send("An unexpected error occured. " + err);
+                    }
                 })
         } else {
             res.status(404).send("404: The page could not be found and this gloo instance contains no 404 template");
