@@ -135,14 +135,14 @@ export default (app: Express) => {
 
         if (templatePath) {
             fetchTaitanData(req.path, lang)
+                // todo: validate that the returned data matches type in an non-overkill way
                 .then(async (data: FuzzyData | TaitanData) => {
-                    console.log(data);
                     if (data["@type"] === "fuzzyfile") {
                         res.send(data)
                     } else {
                         const baseData = await defaultData;
+                        deepSortNav(baseData.nav);
                         data.nav = mergeNavs(baseData.nav, data.nav);
-                        deepSortNav(data.nav);
                         const renderData: RenderData = {
                             ...data,
                             original_updated_at: baseData.original_updated_at,

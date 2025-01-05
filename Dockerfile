@@ -8,8 +8,6 @@ COPY src src
 RUN npm ci
 
 RUN npm run tsc
-# RUN tsc
-
 
 FROM node:21-alpine3.19
 
@@ -20,9 +18,9 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
-COPY --from=build app/dist dist
 COPY static static
 COPY templates templates
+COPY --from=build app/dist dist
 
 CMD ["node", "dist"]
 
