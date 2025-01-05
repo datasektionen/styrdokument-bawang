@@ -68,26 +68,26 @@ const resolveTemplate = (fullPath: string) => {
 //== TESTS ================
 // These tests only work for what's in template_example
 
-// const test = (assert) => {
-//     const defaultTemplateFile = config.defaultTemplate + "." + config.extension;
+const test = (assert) => {
+    const defaultTemplateFile = config.defaultTemplate + "." + config.extension;
 
-//     assert.equals(defaultTemplateFile,
-//         findTemplate({ path: "/" }),
-//         "Root URL always renders default template.");
+    assert.equals(defaultTemplateFile,
+        findTemplate("/"),
+        "Root URL always renders default template.");
 
-//     assert.equals("_404." + config.extension,
-//         findTemplate({ path: "/_404" }),
-//         "Should be able to find a specific file.");
+    assert.equals("_404." + config.extension,
+        findTemplate("/_404"),
+        "Should be able to find a specific file.");
 
-//     assert.equals(defaultTemplateFile,
-//         findTemplate({ path: "/noTemplateForThisOne" }),
-//         "Should give default file when asked for one without template.");
+    assert.equals(defaultTemplateFile,
+        findTemplate("/noTemplateForThisOne"),
+        "Should give default file when asked for one without template.");
 
-//     assert.equals(defaultTemplateFile,
-//         findTemplate({ path: "/foo/bar" }),
-//         "Should be able to climb out of a directory and give default file.");
+    assert.equals(defaultTemplateFile,
+        findTemplate("/foo/bar"),
+        "Should be able to climb out of a directory and give default file.");
 
-// }
+}
 
 export default {
     find: findTemplate,
