@@ -8,9 +8,8 @@ COPY package.json package-lock.json ./
 
 RUN npm ci
 
-COPY *.js ./
+COPY src src
 COPY static static
-COPY templates templates
-COPY gloo gloo
 
-CMD ["npm", "start"]
+RUN npm run tcs
+CMD ["npm", "run", "start"]

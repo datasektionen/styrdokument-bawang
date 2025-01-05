@@ -1,8 +1,19 @@
-const template = require("./find-template");
-const config = require("./../config");
-const express = require("express");
+import template from "./find-template";
+import config from "../config";
+import express, { Express, Request, Response } from "express";
 
-const comparePages = (a, b) => {
+type Nav = NavItem[];
+
+type NavItem = {
+    slug: string,
+    title: string,
+    sort?: number,
+    expanded?: boolean,
+    nav?: Nav,
+    exists?: boolean,
+};
+
+const comparePages = (a: NavItem, b: NavItem) => {
     if (a.sort === b.sort) {
         if (a.title === b.title) return 0
         if (a.title === undefined) return 1;
@@ -17,7 +28,7 @@ const comparePages = (a, b) => {
     return (a.sort - b.sort);
 };
 
-const deepSortNav = (nav) => {
+const deepSortNav = (nav: Nav) => {
     nav.sort(comparePages)
     nav.forEach(item => {
         if (item.nav) {
@@ -26,9 +37,9 @@ const deepSortNav = (nav) => {
     })
 }
 
-const mergeNavs = (base, add) => {
+const mergeNavs = (base: Nav, add: Nav) => {
     base.forEach(item => {
-        const o = add.find((v, id, o) => {
+        const o = add.find((o) => {
             return o.slug == item.slug;
         });
 
@@ -40,9 +51,11 @@ const mergeNavs = (base, add) => {
             }
         };
     })
+
+    return base;
 };
 
-const fetchTaitanData = (path, lang) => {
+const fetchTaitanData = async (path: string, lang: string) => {
     const url = `${config.taitanUrl}${path}?lang=${lang}`;
 
     return fetch(url)
@@ -58,22 +71,18 @@ const fetchTaitanData = (path, lang) => {
             else
                 throw response.status
         })
-}
+};
 
-
-
-
-module.exports = function (app) {
+export default (app: Express) => {
 
     // Static assets will be available on the same path as their directory,
     // i.e. assets => /assets, static => /static
-    app.use('/' + config.staticDir, express.static(config.staticDir));
+    app.use('/static', express.static(config.staticDir));
 
     // All requests that are not static files should be resolved
-    app.get("*", (req, res) => {
-
-        const templatePath = template.find(req);
-        const lang = req.query?.lang ?? config.defaultLang;
+    app.get("*", (req: Request<unknown, unknown, unknown, { lang?: string }>, res: Response) => {
+        const templatePath = template.find(req.path);
+        const lang = req.query.lang ?? config.defaultLang;
         const defaultData = fetchTaitanData(req.path, lang).then(data => {
             console.log(data);
             return {
@@ -105,9 +114,9 @@ module.exports = function (app) {
                     else
                         res.status(500).send("An unexpected error occured. " + err)
                 })
+        } else {
+            res.status(404).send("404: The page could not be found and this gloo instance contains no 404 template");
         }
-        else
-            return res.status(404).send("404: The page could not be found and this gloo instance contains no 404 template");
 
     });
 

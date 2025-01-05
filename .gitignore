@@ -3,3 +3,4 @@ node_modules
 gruntfile.js
 gulpfile.js
 gloo_errors.txt
+dist

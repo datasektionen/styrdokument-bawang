@@ -1,7 +1,7 @@
 /**
  * Gloo configuration
  */
-module.exports = {
+export default {
 
     // External port where Gloo should listen for connections
     // When deployed, this is usually process.env.PORT
@@ -17,7 +17,7 @@ module.exports = {
     defaultTemplate: "_default",
 
     // Directories this gloo instance uses to source its content
-    templateDir: "templates",
+    templateDir: "src/templates",
     staticDir: "static",
 
     // language handling
