@@ -9,9 +9,44 @@ type NavItem = {
     title: string,
     sort?: number,
     expanded?: boolean,
+    active?: boolean,
     nav?: Nav,
     exists?: boolean,
 };
+
+type FuzzyData = {
+    '@type': 'fuzzyfile',
+    fuzzes: {
+        name: string,
+        str: string,
+        href: string,
+    }[]
+}
+
+type TaitanData = {
+    '@type': 'data',
+    title: string,
+    slug: string,
+    url: string,
+    updated_at: string,
+    image?: string,
+    message?: string,
+    body: string,
+    sidebar?: string,
+    sort?: number,
+    expanded?: boolean,
+    anchors: {
+        id: string,
+        value: string,
+        level: number
+    }[],
+    nav: Nav,
+}
+
+type RenderData = TaitanData & {
+    original_updated_at: string,
+    lang: string
+}
 
 const comparePages = (a: NavItem, b: NavItem) => {
     if (a.sort === b.sort) {
@@ -41,6 +76,7 @@ const mergeNavs = (base: Nav, add: Nav | undefined) => {
     if (add === undefined) {
         return base;
     }
+    
     return base.map(item => {
         const o: NavItem | undefined = add.find((o) => {
             return o.slug === item.slug;
@@ -93,21 +129,26 @@ export default (app: Express) => {
             // console.log(data);
             return {
                 nav: data.nav,
-                updatedAt: data.updatedAt
+                original_updated_at: data.updated_at
             };
         });
 
         if (templatePath) {
             fetchTaitanData(req.path, lang)
-                .then(async (data) => {
-                    if (data.fuzzes) {
+                .then(async (data: FuzzyData | TaitanData) => {
+                    console.log(data);
+                    if (data["@type"] === "fuzzyfile") {
                         res.send(data)
                     } else {
                         const baseData = await defaultData;
                         data.nav = mergeNavs(baseData.nav, data.nav);
-                        console.log(data.nav);
                         deepSortNav(data.nav);
-                        res.render(templatePath, data);
+                        const renderData: RenderData = {
+                            ...data,
+                            original_updated_at: baseData.original_updated_at,
+                            lang
+                        }
+                        res.render(templatePath, renderData);
                     }
                 })
                 .catch((err: string | number) => {
