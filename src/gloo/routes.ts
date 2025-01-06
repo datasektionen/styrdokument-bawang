@@ -45,7 +45,8 @@ type TaitanData = {
 
 type RenderData = TaitanData & {
     original_updated_at: string,
-    lang: string
+    lang: string,
+    default_lang: string
 }
 
 const comparePages = (a: NavItem, b: NavItem) => {
@@ -143,17 +144,19 @@ export default (app: Express) => {
                         const baseData = await defaultData;
                         deepSortNav(baseData.nav);
                         data.nav = mergeNavs(baseData.nav, data.nav);
+
                         const renderData: RenderData = {
                             ...data,
                             original_updated_at: baseData.original_updated_at,
-                            lang
+                            lang,
+                            default_lang: config.defaultLang
                         }
                         res.render(templatePath, renderData);
                     }
                 })
                 .catch((err: string | number) => {
                     if (err == 404) {
-                        res.status(404).render("_404." + config.extension, { req: req });
+                        res.status(404).render(`_404.${config.extension}`, { req: req });
                     } else if (typeof err === "string" && (err.startsWith("/") || err.startsWith("http"))) {
 
                         res.redirect(err);

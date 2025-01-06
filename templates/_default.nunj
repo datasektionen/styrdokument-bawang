@@ -15,6 +15,7 @@
             window.methone_conf = {
                 system_name: "styrdokument",
                 color_scheme: "cerise",
+
                 {% if lang == "en" %}
                     login_text: "Svenska",
                     login_href: "{{slug}}?lang=sv",
@@ -22,6 +23,7 @@
                     login_text: "English",
                     login_href: "{{slug}}?lang=en",
                 {% endif %}
+
                 links: [
                     {
                         str: "Styrdokument",
@@ -104,7 +106,20 @@
                         <div class="col-sm-8 col-md-9">
                             <div class="row">
                                 <div class="col-sm-9">
+
+                                    {% if lang != default_lang %}
+                                        <div>
+                                            Note that this document is only an interpretation of the official Swedish document.
+                                            <br/> <br/>
+                                            This translation was last updated at <b>{{updated_at}}</b>. <br/>
+                                            The Swedish version was last updated at <b>{{original_updated_at}}</b>.
+                                        </div>
+
+                                        <hr/>
+                                    {% endif %}
+
                                     {{ body | safe }}
+
                                 </div>
                                 <div class="col-sm-3" id="sidebar">
                                     {% block sidebar %}
