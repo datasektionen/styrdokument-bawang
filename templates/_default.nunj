@@ -68,7 +68,11 @@
                             <div id="secondary-nav">
                                 {% block navigation %}
                                     <h2 style="text-align: center; border-bottom: 2px solid #eee; padding-bottom: 1.2rem;">
-                                        <a href="/"> Styrdokument </a>
+                                        {% if lang == "sv" %}
+                                            <a href="/"> Styrdokument </a>
+                                        {% else %}
+                                            <a href="/?lang=en"> Governing Documents </a>
+                                        {% endif %}
                                     </h2>
                                     {% for topItem in nav %}
                                         {% if topItem.expanded %}
@@ -107,18 +111,21 @@
                             <div class="row">
                                 <div class="col-sm-9">
 
-                                    {% if lang != default_lang %}
-                                        <div>
-                                            Note that this document is only an interpretation of the official Swedish document.
-                                            <br/> <br/>
-                                            This translation was last updated at <b>{{updated_at}}</b>. <br/>
-                                            The Swedish version was last updated at <b>{{original_updated_at}}</b>.
-                                        </div>
+                                    {% block content %}
+                                        {% if lang != default_lang %}
+                                            <div>
+                                                Note that this document is only an interpretation of the official Swedish document. <br/><br/>
+                                                There are no guarantees that the translation is correct, and if there are any inconsistencies between the versions,
+                                                the original document is the one that matters.<br/><br/>
+                                                This translation was last updated at <b>{{updated_at}}</b>. <br/>
+                                                The official version was last updated at <b>{{original_updated_at}}</b>.
+                                            </div>
 
-                                        <hr/>
-                                    {% endif %}
-
-                                    {{ body | safe }}
+                                            <hr/>
+                                        {% endif %}
+                                    
+                                        {{ body | safe }}    
+                                    {% endblock %}
 
                                 </div>
                                 <div class="col-sm-3" id="sidebar">
