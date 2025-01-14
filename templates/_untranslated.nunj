@@ -1,0 +1,17 @@
+{% extends "_default.nunj" %}
+
+{% block content %}
+
+  {% if lang == 'en' %}
+
+    This page has not yet been translated. You can help out with translating it by opening a pull request on our 
+    <a  href="https://github.com/datasektionen/styrdokument">github</a>!
+  {% endif %}
+  
+  {% if lang == 'sv' %}
+
+    Den här sidan har inte blivit översatt ännu! Om du vill hjälpa till    
+  {% endif %}
+
+{% endblock %}
+
