@@ -24,7 +24,7 @@ type FuzzyData = {
 }
 
 type TaitanData = {
-    '@type': 'data',
+    '@type': 'data', // not actually provided by taitan
     title: string,
     slug: string,
     url: string,
@@ -77,7 +77,7 @@ const mergeNavs = (base: Nav, add: Nav | undefined) => {
     if (add === undefined) {
         return base;
     }
-    
+
     return base.map(item => {
         const o: NavItem | undefined = add.find((o) => {
             return o.slug === item.slug;
@@ -126,43 +126,63 @@ export default (app: Express) => {
     app.get("*", (req: PageRequest, res: Response) => {
         const templatePath = template.find(req.path);
         const lang = req.query.lang ?? config.defaultLang;
-        const defaultData = fetchTaitanData(req.path, config.defaultLang).then(data => {
-            // console.log(data);
-            return {
-                nav: data.nav,
-                original_updated_at: data.updated_at
-            };
-        });
+        const defaultLangData = fetchTaitanData(req.path, config.defaultLang).then(data => ({
+            nav: data.nav,
+            original_updated_at: data.updated_at
+        }));
+
 
         if (templatePath) {
             fetchTaitanData(req.path, lang)
                 // todo: validate that the returned data matches type in an non-overkill way
                 .then(async (data: FuzzyData | TaitanData) => {
                     if (data["@type"] === "fuzzyfile") {
-                        res.send(data)
+                        res.send(data);
+                        return Promise.resolve();
                     } else {
-                        const baseData = await defaultData;
-                        deepSortNav(baseData.nav);
-                        data.nav = mergeNavs(baseData.nav, data.nav);
+                        return defaultLangData.then((baseData) => {
+                            deepSortNav(baseData.nav);
 
-                        const renderData: RenderData = {
-                            ...data,
-                            original_updated_at: baseData.original_updated_at,
-                            lang,
-                            default_lang: config.defaultLang
-                        }
-                        res.render(templatePath, renderData);
+                            const renderData: RenderData = {
+                                ...data,
+                                lang,
+                                nav: mergeNavs(baseData.nav, data.nav),
+                                original_updated_at: baseData.original_updated_at,
+                                default_lang: config.defaultLang
+                            };
+
+                            res.render(templatePath, renderData);
+                        })
                     }
                 })
                 .catch((err: string | number) => {
-                    if (err == 404) {
-                        res.status(404).render(`_404.${config.extension}`, { req: req });
-                    } else if (typeof err === "string" && (err.startsWith("/") || err.startsWith("http"))) {
+                    defaultLangData.then((baseData) =>
+                        fetchTaitanData("/", lang)
+                            .then((langBase: FuzzyData | TaitanData) => {
+                                if (langBase["@type"] == "fuzzyfile") {
+                                    return Promise.reject(500);
+                                }
+                                deepSortNav(baseData.nav);
 
-                        res.redirect(err);
-                    } else {
-                        res.status(500).send("An unexpected error occured. " + err);
-                    }
+                                const renderData: RenderData = {
+                                    ...langBase,
+                                    nav: mergeNavs(baseData.nav, langBase.nav),
+                                    original_updated_at: baseData.original_updated_at,
+                                    lang,
+                                    default_lang: config.defaultLang
+                                };
+                                res.render(`_untranslated.${config.extension}`, renderData);
+                            })
+                    ).catch((err2) => {
+                        if (err2 == 404) {
+                            res.status(404).render(`_404.${config.extension}`, { req: req });
+                        } else if (typeof err === "string" && (err.startsWith("/") || err.startsWith("http"))) {
+                            res.redirect(err);
+                        } else {
+                            res.status(500).send("An unexpected error occured. " + err);
+                        }
+                    })
+
                 })
         } else {
             res.status(404).send("404: The page could not be found and this gloo instance contains no 404 template");

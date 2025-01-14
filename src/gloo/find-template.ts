@@ -4,8 +4,6 @@ import config from "../config";
 import { Request } from "express";
 
 
-// exports.find = findTemplate;
-
 /**
  * Finds the template file that fits the request
  *
