@@ -4,7 +4,8 @@
     <head>
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <title>{{ title }} - Datasektionens styrdokument</title>
+        <title>{{ title }}
+            - Datasektionens styrdokument</title>
         <link rel="stylesheet" href="{{ static }}"/>
         <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="96x96" href="/static/favicon-96x96.png">
@@ -19,26 +20,38 @@
                 {% if lang == "en" %}
                     login_text: "Svenska",
                     login_href: "{{slug}}?lang=sv",
+                    links: [
+                        {
+                            str: "Governing Documents",
+                            href: "/?lang={{lang}}"
+                        }, {
+                            str: "Statues",
+                            href: "/stadgar/?lang={{lang}}"
+                        }, {
+                            str: "Bylaws",
+                            href: "/reglemente/?lang={{lang}}"
+                        }
+                    ]
                 {% else %}
                     login_text: "English",
                     login_href: "{{slug}}?lang=en",
+                    links: [
+                        {
+                            str: "Styrdokument",
+                            href: "/?lang={{lang}}"
+                        }, {
+                            str: "Stadgar",
+                            href: "/stadgar/?lang={{lang}}"
+                        }, {
+                            str: "Reglemente",
+                            href: "/reglemente/?lang={{lang}}"
+                        }
+                    ]
                 {% endif %}
 
-                links: [
-                    {
-                        str: "Styrdokument",
-                        href: "/?lang={{lang}}"
-                    }, {
-                        str: "Stadgar",
-                        href: "/stadgar/?lang={{lang}}"
-                    }, {
-                        str: "Reglemente",
-                        href: "/reglemente/?lang={{lang}}"
-                    }
-                ]
             }
         </script>
-        <script async src="//methone.datasektionen.se/bar.js"></script>
+        <script async="async" src="//methone.datasektionen.se/bar.js"></script>
     </head>
 
     <body>
@@ -69,24 +82,26 @@
                                 {% block navigation %}
                                     <h2 style="text-align: center; border-bottom: 2px solid #eee; padding-bottom: 1.2rem;">
                                         {% if lang == "sv" %}
-                                            <a href="/"> Styrdokument </a>
+                                            <a href="/">
+                                                Styrdokument
+                                            </a>
                                         {% else %}
-                                            <a href="/?lang=en"> Governing Documents </a>
+                                            <a href="/?lang=en">
+                                                Governing Documents
+                                            </a>
                                         {% endif %}
                                     </h2>
                                     {% for topItem in nav %}
                                         {% if topItem.expanded %}
                                             <h3 style="margin-top: 1rem;">
-                                                <a {% if topItem.active %} class="text-theme-color strong" {% endif %}
-                                href="{{ topItem.slug }}?lang={{lang}}">
+                                                <a {% if topItem.active %} class="text-theme-color strong" {% endif %} href="{{ topItem.slug }}?lang={{lang}}">
                                                     {{topItem.title}}
                                                 </a>
                                             </h3>
                                             {% for subItem in topItem.nav %}
                                                 <ul>
                                                     <li style="margin-left: 2rem;">
-                                                        <a {% if subItem.active %} class="text-theme-color strong" {% elif not subItem.exists %}
-                                    style="color: #bbb" {% endif %} href="{{ subItem.slug }}?lang={{lang}}">
+                                                        <a {% if subItem.active %} class="text-theme-color strong" {% elif not subItem.exists %} style="color: #bbb" {% endif %} href="{{ subItem.slug }}?lang={{lang}}">
                                                             {{ subItem.title }}
                                                         </a>
                                                     </li>
@@ -96,8 +111,7 @@
                                         {% else %}
                                             <ul>
                                                 <li>
-                                                    <a {% if topItem.active %} class="text-theme-color strong" {% elif not topItem.exists %}
-                                    style="color: #bbb" {% endif %} href="{{ topItem.slug }}?lang={{lang}}">
+                                                    <a {% if topItem.active %} class="text-theme-color strong" {% elif not topItem.exists %} style="color: #bbb" {% endif %} href="{{ topItem.slug }}?lang={{lang}}">
                                                         {{ topItem.title }}
                                                     </a>
                                                 </li>
@@ -114,17 +128,20 @@
                                     {% block content %}
                                         {% if lang != default_lang %}
                                             <div>
-                                                Note that this document is only an interpretation of the official Swedish document. <br/><br/>
-                                                There are no guarantees that the translation is correct, and if there are any inconsistencies between the versions,
-                                                the original document is the one that matters.<br/><br/>
-                                                This translation was last updated at <b>{{updated_at}}</b>. <br/>
-                                                The official version was last updated at <b>{{original_updated_at}}</b>.
+                                                Note that this document is only an interpretation of the official Swedish document.
+                                                <br/><br/>
+                                                There are no guarantees that the translation is correct, and if there are any inconsistencies between the versions, the original document is the one that matters.<br/><br/>
+                                                This translation was last updated at
+                                                <b>{{updated_at}}</b>.
+                                                <br/>
+                                                The official version was last updated at
+                                                <b>{{original_updated_at}}</b>.
                                             </div>
 
                                             <hr/>
                                         {% endif %}
-                                    
-                                        {{ body | safe }}    
+
+                                        {{ body | safe }}
                                     {% endblock %}
 
                                 </div>
