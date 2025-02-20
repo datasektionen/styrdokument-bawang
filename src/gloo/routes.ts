@@ -21,7 +21,7 @@ type FuzzyData = {
         str: string,
         href: string,
     }[]
-}
+};
 
 type TaitanData = {
     '@type': 'data', // not actually provided by taitan
@@ -41,13 +41,14 @@ type TaitanData = {
         level: number
     }[],
     nav: Nav,
-}
+};
 
 type RenderData = TaitanData & {
     original_updated_at: string,
     lang: string,
     default_lang: string
-}
+};
+
 
 const comparePages = (a: NavItem, b: NavItem) => {
     if (a.sort === b.sort) {
@@ -71,26 +72,26 @@ const deepSortNav = (nav: Nav) => {
             deepSortNav(item.nav);
         }
     })
-}
+};
 
-const mergeNavs = (base: Nav, add: Nav | undefined) => {
-    if (add === undefined) {
+const mergeNavs = (base: Nav, other: Nav | undefined) => {
+    if (other === undefined) {
         return base;
     }
 
     return base.map(item => {
-        const o: NavItem | undefined = add.find((o) => {
+        const otherItem: NavItem | undefined = other.find((o) => {
             return o.slug === item.slug;
         });
 
 
-        return o ? {
+        return otherItem ? {
             ...item,
-            ...(o.title !== '' ? {
-                title: o.title,
+            ...(otherItem.title !== '' ? {
+                title: otherItem.title,
                 exists: true,
             } : {}),
-            nav: item.nav && mergeNavs(item.nav, o.nav),
+            nav: item.nav && mergeNavs(item.nav, otherItem.nav),
         } : item;
     })
 };
@@ -111,7 +112,7 @@ const fetchTaitanData = async (path: string, lang: string) => {
             } else {
                 throw response.status
             }
-        })
+        });
 };
 
 type PageRequest = Request<unknown, unknown, unknown, { lang?: string }>;
