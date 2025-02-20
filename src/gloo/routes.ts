@@ -164,12 +164,18 @@ export default (app: Express) => {
                                 }
                                 deepSortNav(baseData.nav);
 
+                                const title = {
+                                    "en": "Page not yet avaliable in English",
+                                    "sv": "Sidan inte tillgänglig på Svenska",
+                                }[lang];
+
                                 const renderData: RenderData = {
                                     ...langBase,
+                                    title,
+                                    lang,
                                     slug: req.path,
                                     nav: mergeNavs(baseData.nav, langBase.nav),
                                     original_updated_at: baseData.original_updated_at,
-                                    lang,
                                     default_lang: config.defaultLang
                                 };
                                 res.render(`_untranslated.${config.extension}`, renderData);
