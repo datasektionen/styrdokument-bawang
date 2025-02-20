@@ -1,8 +1,8 @@
-const path = require("path");
-const fs = require("fs");
-const config = require("./../config");
+import path from "path";
+import fs from "fs";
+import config from "../config";
+import { Request } from "express";
 
-exports.find = findTemplate;
 
 /**
  * Finds the template file that fits the request
@@ -10,9 +10,9 @@ exports.find = findTemplate;
  * @param req         Express request object
  * @returns resolved  Resolved template file path
  */
-function findTemplate(req) {
+const findTemplate = (searchPath: Request["path"]) => {
 
-    var searchPath = req.path;
+    // var searchPath = req.path;
 
     // 1. Root URL always renders default template
     if (searchPath === "/")
@@ -51,7 +51,7 @@ function findTemplate(req) {
  * @param fullPath  Path of the template (inside the config.templateDir)
  * @returns         string/undefined
  */
-function resolveTemplate(fullPath) {
+const resolveTemplate = (fullPath: string) => {
     var fullPathWithExt = path.normalize(fullPath + "." + config.extension);
 
     try {
@@ -66,23 +66,28 @@ function resolveTemplate(fullPath) {
 //== TESTS ================
 // These tests only work for what's in template_example
 
-exports.test = function(assert) {
+const test = (assert) => {
     const defaultTemplateFile = config.defaultTemplate + "." + config.extension;
 
     assert.equals(defaultTemplateFile,
-        findTemplate({path:"/"}),
+        findTemplate("/"),
         "Root URL always renders default template.");
 
     assert.equals("_404." + config.extension,
-        findTemplate({path:"/_404"}),
+        findTemplate("/_404"),
         "Should be able to find a specific file.");
 
     assert.equals(defaultTemplateFile,
-        findTemplate({path:"/noTemplateForThisOne"}),
+        findTemplate("/noTemplateForThisOne"),
         "Should give default file when asked for one without template.");
 
     assert.equals(defaultTemplateFile,
-        findTemplate({"path":"/foo/bar"}),
+        findTemplate("/foo/bar"),
         "Should be able to climb out of a directory and give default file.");
 
+}
+
+export default {
+    find: findTemplate,
+    test
 }
