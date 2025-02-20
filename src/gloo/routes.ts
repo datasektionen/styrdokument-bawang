@@ -166,6 +166,7 @@ export default (app: Express) => {
 
                                 const renderData: RenderData = {
                                     ...langBase,
+                                    slug: req.path,
                                     nav: mergeNavs(baseData.nav, langBase.nav),
                                     original_updated_at: baseData.original_updated_at,
                                     lang,

@@ -10,7 +10,8 @@
   
   {% if lang == 'sv' %}
 
-    Den här sidan har inte blivit översatt ännu! Om du vill hjälpa till    
+    Den här sidan har inte blivit översatt ännu! Du kan hjälpa genom att skapa en pull request på vår 
+    <a  href="https://github.com/datasektionen/styrdokument">github</a>!
   {% endif %}
 
 {% endblock %}
