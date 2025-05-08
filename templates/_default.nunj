@@ -8,29 +8,47 @@
         <link rel="stylesheet" href="{{ static }}" />
         <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
         <script type="text/javascript">
-          window.methone_conf = {
-            system_name: "styrdokument",
-            color_scheme: "cerise",
-            login_text: "",
-            login_link: "#",
-            links: [
-              {
-                str: "Styrdokument",
-                href: "/"
-              },
-              {
-                  str: "Stadgar",
-                  href: "/stadgar/"
-              },
-              {
-                  str: "Reglemente",
-                  href: "/reglemente/"
-              }
-            ]
-          }
+            window.methone_conf = {
+                system_name: "styrdokument",
+                color_scheme: "cerise",
+
+                {% if lang == "en" %}
+                    login_text: "Svenska",
+                    login_href: "{{slug}}?lang=sv",
+                    links: [
+                        {
+                            str: "Governing Documents",
+                            href: "/?lang={{lang}}"
+                        }, {
+                            str: "Statues",
+                            href: "/stadgar/?lang={{lang}}"
+                        }, {
+                            str: "Bylaws",
+                            href: "/reglemente/?lang={{lang}}"
+                        }
+                    ]
+                {% else %}
+                    login_text: "English",
+                    login_href: "{{slug}}?lang=en",
+                    links: [
+                        {
+                            str: "Styrdokument",
+                            href: "/?lang={{lang}}"
+                        }, {
+                            str: "Stadgar",
+                            href: "/stadgar/?lang={{lang}}"
+                        }, {
+                            str: "Reglemente",
+                            href: "/reglemente/?lang={{lang}}"
+                        }
+                    ]
+                {% endif %}
+
+            }
         </script>
-        <script async src="//methone.datasektionen.se/bar.js"></script>
+        <script async="async" src="//methone.datasektionen.se/bar.js"></script>
     </head>
+
     <body>
         <div id="methone-container-replace"></div>
         <div id="application" class="cerise">
@@ -56,47 +74,71 @@
                     <div class="row">
                         <div class="col-sm-4 col-md-3">
                             <div id="secondary-nav">
-                        {% block navigation %}
-                            <h2 style="text-align: center; border-bottom: 2px solid #eee; padding-bottom: 1.2rem;">
-                                <a href="/"> Styrdokument </a>
-                            </h2>
-                            {% for topItem in nav %}
-                                {% if topItem.expanded %}
-                                    <h3 style="margin-top: 1rem;">
-                                        <a {% if topItem.active %} class="text-theme-color strong" {% endif %}
-                                            href="{{ topItem.slug }}"
-                                        >
-                                            {{topItem.title}}
-                                        </a>
-                                    </h3>
-                                    {% for subItem in topItem.nav %} 
-                                        <ul>
-                                            <li style="margin-left: 2rem;">
-                                                <a {% if subItem.active %} class="text-theme-color strong" {% endif %}
-                                                    href="{{ subItem.slug }}"
-                                                >
-                                                    {{ subItem.title }}
+                                {% block navigation %}
+                                    <h2 style="text-align: center; border-bottom: 2px solid #eee; padding-bottom: 1.2rem;">
+                                        {% if lang == "sv" %}
+                                            <a href="/">
+                                                Styrdokument
+                                            </a>
+                                        {% else %}
+                                            <a href="/?lang=en">
+                                                Governing Documents
+                                            </a>
+                                        {% endif %}
+                                    </h2>
+                                    {% for topItem in nav %}
+                                        {% if topItem.expanded %}
+                                            <h3 style="margin-top: 1rem;">
+                                                <a {% if topItem.active %} class="text-theme-color strong" {% endif %} href="{{ topItem.slug }}?lang={{lang}}">
+                                                    {{topItem.title}}
                                                 </a>
-                                            </li>
-                                        </ul>
+                                            </h3>
+                                            {% for subItem in topItem.nav %}
+                                                <ul>
+                                                    <li style="margin-left: 2rem;">
+                                                        <a {% if subItem.active %} class="text-theme-color strong" {% elif not subItem.exists %} style="color: #bbb" {% endif %} href="{{ subItem.slug }}?lang={{lang}}">
+                                                            {{ subItem.title }}
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            {% endfor %}
+                                            <p style="margin-bottom: 1rem;"/>
+                                        {% else %}
+                                            <ul>
+                                                <li>
+                                                    <a {% if topItem.active %} class="text-theme-color strong" {% elif not topItem.exists %} style="color: #bbb" {% endif %} href="{{ topItem.slug }}?lang={{lang}}">
+                                                        {{ topItem.title }}
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        {% endif %}
                                     {% endfor %}
-                                    <p style="margin-bottom: 1rem;"/>
-                                {% else %}
-                                    <ul>
-                                        <li>
-                                            <a {% if topItem.active %} class="text-theme-color strong" {% endif %}
-                                                    href="{{ topItem.slug }}">{{ topItem.title }}</a>
-                                        </li>
-                                    </ul>
-                                {% endif %}
-                            {% endfor %}
-                        {% endblock %}
-                    </div>
+                                {% endblock %}
+                            </div>
                         </div>
                         <div class="col-sm-8 col-md-9">
                             <div class="row">
                                 <div class="col-sm-9">
-                                    {{ body | safe }}
+
+                                    {% block content %}
+                                        {% if lang != default_lang %}
+                                            <div>
+                                                Note that this document is only an interpretation of the official Swedish document.
+                                                <br/><br/>
+                                                There are no guarantees that the translation is correct, and if there are any inconsistencies between the versions, the original document is the one that matters.<br/><br/>
+                                                This translation was last updated at
+                                                <b>{{updated_at}}</b>.
+                                                <br/>
+                                                The official version was last updated at
+                                                <b>{{original_updated_at}}</b>.
+                                            </div>
+
+                                            <hr/>
+                                        {% endif %}
+
+                                        {{ body | safe }}
+                                    {% endblock %}
+
                                 </div>
                                 <div class="col-sm-3" id="sidebar">
                                     {% block sidebar %}
@@ -105,15 +147,18 @@
                                             <ul>
                                                 {% for anchor in anchors %}
                                                     {% if anchor.level < 3 %}
-                                                    <li style="list-style-type: none;">
-                                                        <a href="#{{ anchor.id }}">
-                                                            {% if anchor.level == 1 %}
-                                                                <div style="font-weight: bold;"> {{ anchor.value }} </div>
-                                                            {% else %}
-                                                                <div style="margin-left: 1.5rem;"> {{ anchor.value }}</div>
-                                                            {% endif %}
-                                                        </a>
-                                                    </li>
+                                                        <li style="list-style-type: none;">
+                                                            <a href="#{{ anchor.id }}">
+                                                                {% if anchor.level == 1 %}
+                                                                    <div style="font-weight: bold;">
+                                                                        {{ anchor.value }}
+                                                                    </div>
+                                                                {% else %}
+                                                                    <div style="margin-left: 1.5rem;">
+                                                                        {{ anchor.value }}</div>
+                                                                {% endif %}
+                                                            </a>
+                                                        </li>
                                                     {% endif %}
                                                 {% endfor %}
                                             </ul>
@@ -128,4 +173,5 @@
             </div>
         </div>
     </body>
+
 </html>
